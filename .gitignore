@@ -51,3 +51,6 @@ next-env.d.ts
 
 # capturas de tela das verificações (para revisão local)
 /capturas/
+
+# projetos fictícios usados para testar o grid e o filtro (apagar ao fim do Lote 5)
+/content/projects/zz-teste-*.mdx

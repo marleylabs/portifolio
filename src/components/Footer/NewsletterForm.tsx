@@ -4,7 +4,7 @@ import { useActionState, useId, useRef, useState, type FormEvent } from "react";
 import { subscribeToNewsletter, type NewsletterState } from "@/app/actions/newsletter";
 import { SpamTrap } from "@/components/Forms/SpamTrap";
 import forms from "@/components/Forms/Forms.module.css";
-import { EMAIL_MAX_LENGTH, EMAIL_MESSAGES } from "@/lib/form-fields";
+import { EMAIL_MAX_LENGTH, EMAIL_MESSAGES, hasDottedDomain } from "@/lib/form-fields";
 import styles from "./Footer.module.css";
 
 /**
@@ -31,7 +31,7 @@ export function NewsletterForm() {
       ? EMAIL_MESSAGES.required
       : tooLong
         ? EMAIL_MESSAGES.tooLong
-        : typeMismatch
+        : typeMismatch || !hasDottedDomain(input.value)
           ? EMAIL_MESSAGES.invalid
           : null;
     setClientError(message);

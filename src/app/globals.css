@@ -241,3 +241,55 @@ a:hover {
   letter-spacing: 0.02em;
   vertical-align: middle;
 }
+
+/* ---------- View transitions: filtro de /projetos ----------
+ * Classes aplicadas pelo <ViewTransition> do ProjectExplorer (só em transições do tipo
+ * "filtro-projetos"). Mesma mola do resto do site: --ease-spring / --spring-duration.
+ */
+::view-transition-group(.project-move),
+::view-transition-group(.project-enter),
+::view-transition-group(.project-exit) {
+  animation-duration: var(--spring-duration);
+  animation-timing-function: var(--ease-spring);
+}
+
+/* Card que só mudou de lugar: o conteúdo é o mesmo, então nada de "fantasma" cruzando. */
+::view-transition-old(.project-move) {
+  animation: none;
+  opacity: 0;
+}
+
+::view-transition-new(.project-move) {
+  animation: none;
+}
+
+::view-transition-new(.project-enter) {
+  animation: project-enter var(--spring-duration) var(--ease-spring) both;
+}
+
+::view-transition-old(.project-exit) {
+  animation: project-exit var(--duration-base) var(--ease-out) both;
+}
+
+@keyframes project-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+
+@keyframes project-exit {
+  to {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}

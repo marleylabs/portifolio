@@ -79,3 +79,28 @@ e a região de aviso recebe o texto), não a fala de um leitor de tela.
       focar, aparece "Animações reduzidas pelas configurações do seu sistema"; no menu do
       celular, essa frase fica escrita abaixo de "Animações". O leitor de tela lê o botão
       como pressionado e indisponível, com a frase como descrição.
+
+## Lote 3 — performance
+
+### Core Web Vitals reais (dados de campo)
+Por quê: as medições do projeto são de laboratório (Lighthouse local, celular simulado).
+Os números que contam são os de visitantes de verdade.
+
+- [ ] Ative o **Vercel Speed Insights** (painel do projeto → Speed Insights) e instale o
+      pacote `@vercel/speed-insights`, com `<SpeedInsights />` no `layout.tsx`.
+- [ ] **Antes**, ajuste a CSP em `next.config.ts`: o script do Speed Insights é servido
+      pelo próprio domínio (`/_vercel/speed-insights/script.js`) e envia os dados para
+      `/_vercel/speed-insights/vitals` — já coberto por `script-src 'self'` e
+      `connect-src 'self'`. Confirme no Console que não aparece "Refused to load" nem
+      "Refused to connect"; se aparecer, a mensagem diz qual domínio liberar.
+- [ ] Depois de alguns dias de tráfego, confira no painel (percentil 75, celular):
+      LCP < 2,5 s, INP < 200 ms, CLS < 0,1 — em especial na home, em /projetos e nos artigos.
+- [ ] Linha de base do laboratório, para comparação: TBT ~165 ms aceito no Lote 3
+      (hidratação do React); se o INP de campo passar de 200 ms, reabrir o tema.
+
+### Filtro de /projetos (View Transitions)
+- [ ] Com vários projetos publicados, filtre por tecnologia no Chrome, no Safari (18.2+)
+      e no Firefox (144+): os cards deslizam com a mola, os que entram crescem e os que saem
+      encolhem. Num navegador sem suporte, o filtro troca na hora, sem erro.
+- [ ] Com "Pausar animações" ligado (ou "reduzir movimento" no sistema), o filtro troca
+      sem animação.

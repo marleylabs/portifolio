@@ -1,42 +1,48 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { AnimatePresence, LazyMotion, MotionConfig, m } from "motion/react";
+import { ViewTransition, addTransitionType, startTransition, useState } from "react";
 import { ProjectCard } from "@/components/ProjectCard/ProjectCard";
 import { pillStyle } from "@/components/StackPill/StackPill";
 import { useSoundEffect } from "@/components/Providers/SoundProvider";
-import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
+import { useAmbientMotionPaused } from "@/hooks/use-preferences";
 import type { ProjectSummary } from "@/lib/content";
 import styles from "./ProjectExplorer.module.css";
 
 type Technology = { name: string; count: number };
 
 const PARAM = "stack";
-const spring = { type: "spring", stiffness: 350, damping: 30 } as const;
-const loadFeatures = () => import("./motion-features").then((mod) => mod.default);
 // Capas da primeira linha: carregam já, com prioridade (são o maior elemento da tela).
 const EAGER_COVERS = 2;
+/*
+ * Tipo da transição do filtro: os cards só animam quando a mudança vem dele. Navegar
+ * para outra página (também uma transição, no Next) não dispara nada aqui.
+ */
+const FILTER = "filtro-projetos";
+const onFilter = (className: string) => ({ [FILTER]: className, default: "none" });
 
 /**
  * Grid de projetos com filtro por tecnologia.
  *
  * - O filtro vive na URL (?stack=React): dá para compartilhar o link. A troca usa
- *   history.replaceState — o Next sincroniza com useSearchParams sem ir ao servidor.
- * - Layout animations (Motion `layout`): cada card desliza da posição antiga para a
- *   nova; os que saem/entram encolhem/crescem. As features `domMax` (que incluem
- *   layout) só são baixadas nesta página, e depois do resto (import assíncrono).
- * - Movimento reduzido: o grid troca na hora, sem animação.
+ *   history.replaceState, sem ir ao servidor.
+ * - Animação nativa (View Transitions, via <ViewTransition> do React): cada card desliza
+ *   da posição antiga para a nova com a mola do site (--ease-spring, em globals.css); os
+ *   que entram crescem, os que saem encolhem. Zero JS de animação no bundle.
+ * - Com "Pausar animações" ou movimento reduzido, a troca acontece fora de uma
+ *   transição: o grid muda na hora. Navegador sem suporte: idem.
  */
 export function ProjectExplorer({ projects, technologies }: { projects: ProjectSummary[]; technologies: Technology[] }) {
   const searchParams = useSearchParams();
-  const prefersReducedMotion = usePrefersReducedMotion();
+  const paused = useAmbientMotionPaused();
   const playSound = useSoundEffect();
 
-  const requested = searchParams.get(PARAM);
-  const selected = technologies.some(({ name }) => name === requested) ? requested : null;
+  const isValid = (tech: string | null) => technologies.some(({ name }) => name === tech);
+  const [selected, setSelected] = useState(() => {
+    const requested = searchParams.get(PARAM);
+    return isValid(requested) ? requested : null;
+  });
   const visible = selected ? projects.filter(({ stack }) => stack.includes(selected)) : projects;
-  // Movimento reduzido: entra/sai só com fade (opacidade não é movimento); sem escala.
-  const hidden = prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.92 };
 
   function select(tech: string | null) {
     const url = new URL(window.location.href);
@@ -44,37 +50,43 @@ export function ProjectExplorer({ projects, technologies }: { projects: ProjectS
     else url.searchParams.delete(PARAM);
     window.history.replaceState(null, "", url);
     playSound("tick");
+
+    if (paused) {
+      setSelected(tech);
+      return;
+    }
+    startTransition(() => {
+      addTransitionType(FILTER);
+      setSelected(tech);
+    });
   }
 
   return (
-    <LazyMotion features={loadFeatures} strict>
-      <MotionConfig reducedMotion={prefersReducedMotion ? "always" : "never"}>
-        <FilterBar technologies={technologies} selected={selected} onSelect={select} total={projects.length} />
+    <>
+      <FilterBar technologies={technologies} selected={selected} onSelect={select} total={projects.length} />
 
-        <p className="visually-hidden" role="status">
-          {selected
-            ? `${visible.length} ${visible.length === 1 ? "projeto" : "projetos"} com ${selected}`
-            : `Mostrando todos os ${projects.length} projetos`}
-        </p>
+      <p className="visually-hidden" role="status">
+        {selected
+          ? `${visible.length} ${visible.length === 1 ? "projeto" : "projetos"} com ${selected}`
+          : `Mostrando todos os ${projects.length} projetos`}
+      </p>
 
-        <ul className={styles.grid}>
-          <AnimatePresence initial={false} mode="popLayout">
-            {visible.map((project, index) => (
-              <m.li
-                key={project.id}
-                layout
-                initial={hidden}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={hidden}
-                transition={spring}
-              >
-                <ProjectCard entry={project} headingLevel={2} eager={index < EAGER_COVERS} />
-              </m.li>
-            ))}
-          </AnimatePresence>
-        </ul>
-      </MotionConfig>
-    </LazyMotion>
+      <ul className={styles.grid}>
+        {visible.map((project, index) => (
+          <ViewTransition
+            key={project.id}
+            default="none"
+            update={onFilter("project-move")}
+            enter={onFilter("project-enter")}
+            exit={onFilter("project-exit")}
+          >
+            <li>
+              <ProjectCard entry={project} headingLevel={2} eager={index < EAGER_COVERS} />
+            </li>
+          </ViewTransition>
+        ))}
+      </ul>
+    </>
   );
 }
 
