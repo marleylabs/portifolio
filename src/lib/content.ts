@@ -16,8 +16,7 @@ import {
   isArticleCategory,
   type ArticleCategory,
 } from "./categories";
-import { POPULAR_FALLBACK } from "./popular";
-import { getViewCounts } from "./views";
+import { HIGHLIGHTS } from "./highlights";
 
 /*
  * Modelo de conteúdo.
@@ -322,33 +321,17 @@ export async function getProject(slug: string): Promise<Project | null> {
 }
 
 /**
- * Artigos mais lidos.
- * A popularidade decide QUAIS entram: pelas visualizações quando houver dados
- * (só artigos internos são contados), senão pela lista manual de lib/popular.ts.
+ * Artigos em destaque, da lista manual de lib/highlights.ts.
  * A ordem de exibição, como no resto do site, é por data (mais recente primeiro).
  */
-export async function getPopular({ limit = 3 }: { limit?: number } = {}): Promise<ArticleSummary[]> {
-  const articles = await getAllArticles();
-  const views = await getViewCounts();
-
-  let picked: ArticleSummary[] = [];
-  if (views && views.size > 0) {
-    picked = articles
-      .filter((article) => (views.get(article.id) ?? 0) > 0)
-      .sort((a, b) => (views.get(b.id) ?? 0) - (views.get(a.id) ?? 0))
-      .slice(0, limit);
-  }
-
-  if (picked.length === 0) {
-    const byId = new Map(articles.map((article) => [article.id, article]));
-    picked = POPULAR_FALLBACK.slice(0, limit).map((id) => {
-      const article = byId.get(id);
-      if (!article) throw new Error(`lib/popular.ts: "${id}" não corresponde a nenhum artigo publicado`);
-      return article;
-    });
-  }
-
-  return [...picked].sort(byDateDesc);
+export async function getHighlights({ limit = 3 }: { limit?: number } = {}): Promise<ArticleSummary[]> {
+  const byId = new Map((await getAllArticles()).map((article) => [article.id, article]));
+  const picked = HIGHLIGHTS.slice(0, limit).map((id) => {
+    const article = byId.get(id);
+    if (!article) throw new Error(`lib/highlights.ts: "${id}" não corresponde a nenhum artigo publicado`);
+    return article;
+  });
+  return picked.sort(byDateDesc);
 }
 
 // ---------- Página "Sobre" ----------

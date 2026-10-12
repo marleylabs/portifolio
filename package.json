@@ -10,7 +10,8 @@
     "typecheck": "next typegen && tsc --noEmit",
     "check:contrast": "node scripts/check-contrast.mjs",
     "generate:sounds": "node scripts/generate-sounds.mjs",
-    "spring-curve": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/spring-curve.mjs"
+    "spring-curve": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/spring-curve.mjs",
+    "test": "vitest run"
   },
   "dependencies": {
     "@codesandbox/sandpack-react": "^2.20.0",
@@ -48,6 +49,7 @@
     "axe-core": "^4.14.0",
     "eslint": "^9",
     "eslint-config-next": "16.4.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.11"
   }
 }

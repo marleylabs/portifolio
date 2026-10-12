@@ -6,8 +6,8 @@ import { rateLimit } from "@/lib/rate-limit";
 import { NotConfiguredError, clientIp, hashVisitor } from "@/lib/visitor";
 
 /*
- * GET  /api/likes?id=article:css/molas-em-css  → { total, mine, max }
- * POST /api/likes  { id, count }                → { total, mine, max }
+ * GET  /api/likes?id=article:css/molas-em-css  → { total, mine }
+ * POST /api/likes  { id, count }                → { total, mine }
  *
  * `count` permite agrupar vários cliques num envio (o botão espera uma pausa).
  * As páginas continuam estáticas: só esta rota roda por requisição.
@@ -25,7 +25,7 @@ async function likeableIds() {
 }
 
 function reply(state: LikeState, status = 200) {
-  return Response.json({ ...state, max: MAX_LIKES_PER_VISITOR }, { status, headers: NO_STORE });
+  return Response.json(state, { status, headers: NO_STORE });
 }
 
 function error(message: string, status: number) {
@@ -34,10 +34,12 @@ function error(message: string, status: number) {
 
 async function handle(request: NextRequest, id: unknown, count: number | null) {
   if (typeof id !== "string" || !(await likeableIds()).has(id)) return error("Conteúdo não encontrado.", 404);
+  const ip = clientIp(request.headers);
+  if (!ip) return error("Não foi possível identificar a conexão.", 400);
 
   try {
     const store = getLikesStore();
-    const visitor = hashVisitor(clientIp(request.headers));
+    const visitor = hashVisitor(ip);
     if (!(await rateLimit("likes", visitor, 30, 60))) return error("Muitas requisições. Tente de novo em um minuto.", 429);
     return reply(count === null ? await store.read(id, visitor) : await store.add(id, visitor, count));
   } catch (cause) {
@@ -62,10 +64,31 @@ const postSchema = z.object({
   count: z.number().int().min(1).max(MAX_LIKES_PER_VISITOR),
 });
 
+/**
+ * Só aceita pedidos feitos pelas páginas deste site. Navegadores mandam Sec-Fetch-Site
+ * (e Origin em todo POST); um site de terceiros não consegue escondê-los nem forjá-los.
+ * Sem os cabeçalhos (navegador antigo, curl), o pedido passa: o limite por visitante
+ * continua valendo.
+ */
+function fromThisSite(request: NextRequest) {
+  const fetchSite = request.headers.get("sec-fetch-site");
+  if (fetchSite && fetchSite !== "same-origin") return false;
+  const origin = request.headers.get("origin");
+  if (!origin) return true;
+  try {
+    return new URL(origin).host === request.headers.get("host");
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(request: NextRequest) {
   await connection();
-  // Exigir JSON força o preflight de CORS em pedidos de outros sites (que não liberamos).
-  if (!request.headers.get("content-type")?.includes("application/json")) return error("Envie JSON.", 415);
+  if (!fromThisSite(request)) return error("Origem não permitida.", 403);
+  // Exatamente JSON: "text/plain; x=application/json" passaria por um "contém" e, sendo um
+  // tipo "simples", não dispararia o preflight de CORS.
+  const type = request.headers.get("content-type")?.split(";")[0].trim().toLowerCase();
+  if (type !== "application/json") return error("Envie JSON.", 415);
 
   const body = postSchema.safeParse(await request.json().catch(() => null));
   if (!body.success) return error("Pedido inválido.", 400);

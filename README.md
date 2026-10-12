@@ -70,9 +70,8 @@ O `<Diagram>` é desenhado em SVG no servidor (zero JS) e gera a descrição ace
 Rascunhos (`draft: true`) também aparecem num build com `SHOW_DRAFTS=true` (útil em previews).
 
 Funções da camada de dados: `getAllArticles`, `getArticlesByCategory`, `getArticle`, `getArticleCategories`,
-`getAllProjects`, `getProject` e `getPopular` — todas em ordem de data decrescente. `getPopular` escolhe os
-artigos pelo contador de visualizações (`src/lib/views.ts`, a implementar) e, sem dados, pela lista manual em
-`src/lib/popular.ts`.
+`getAllProjects`, `getProject` e `getHighlights` — todas em ordem de data decrescente. `getHighlights` devolve
+os artigos em destaque, escolhidos à mão em `src/lib/highlights.ts`.
 
 ### Componentes de MDX (artigos e projetos)
 

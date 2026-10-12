@@ -4,7 +4,7 @@ import type { ArticleSummary } from "@/lib/content";
 import styles from "./PopularList.module.css";
 
 /**
- * Lista numerada dos mais lidos. O número grande é decorativo (aria-hidden): a ordem
+ * Lista numerada dos destaques. O número grande é decorativo (aria-hidden): a ordem
  * já vem do próprio <ol>. role="list" porque o Safari remove a semântica de listas
  * com list-style: none.
  */

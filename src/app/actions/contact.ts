@@ -1,6 +1,6 @@
 "use server";
 
-import { contactRecipient, escapeHtml, sendEmail } from "@/lib/email";
+import { EmailRejectedError, contactRecipient, escapeHtml, sendEmail } from "@/lib/email";
 import { CONTACT_TOPICS, contactSchema, fieldErrors, validate, type ContactFields, type FormState } from "@/lib/forms";
 import { site } from "@/lib/site";
 import { NotConfiguredError } from "@/lib/visitor";
@@ -29,19 +29,27 @@ export async function sendContactMessage(_: ContactState, formData: FormData): P
   }
 
   try {
-    if (!(await allowSubmission("contact", 3, 60 * 60))) {
+    const refund = await allowSubmission("contact", 3, 60 * 60);
+    if (!refund) {
       return { status: "error", message: "Você já enviou várias mensagens. Tente de novo mais tarde.", values };
     }
 
     const { name, email, topic, message } = parsed.data;
     const topicLabel = CONTACT_TOPICS[topic];
-    await sendEmail({
-      to: contactRecipient(),
-      replyTo: email,
-      subject: `[${site.name}] ${topicLabel} — ${name}`,
-      text: `Nome: ${name}\nE-mail: ${email}\nAssunto: ${topicLabel}\n\n${message}`,
-      html: `<p><strong>Nome:</strong> ${escapeHtml(name)}<br><strong>E-mail:</strong> ${escapeHtml(email)}<br><strong>Assunto:</strong> ${escapeHtml(topicLabel)}</p><p style="white-space:pre-wrap">${escapeHtml(message)}</p>`,
-    });
+    try {
+      await sendEmail({
+        to: contactRecipient(),
+        replyTo: email,
+        subject: `[${site.name}] ${topicLabel} — ${name}`,
+        text: `Nome: ${name}\nE-mail: ${email}\nAssunto: ${topicLabel}\n\n${message}`,
+        html: `<p><strong>Nome:</strong> ${escapeHtml(name)}<br><strong>E-mail:</strong> ${escapeHtml(email)}<br><strong>Assunto:</strong> ${escapeHtml(topicLabel)}</p><p style="white-space:pre-wrap">${escapeHtml(message)}</p>`,
+      });
+    } catch (cause) {
+      // A mensagem não saiu por falha nossa (Resend fora do ar): a tentativa não conta.
+      // Se o Resend recusou o pedido, conta: repetir não adianta e só gastaria a cota dele.
+      if (!(cause instanceof EmailRejectedError)) await refund().catch(() => {});
+      throw cause;
+    }
     return success;
   } catch (cause) {
     console.error("[contato] falha ao enviar", cause);
