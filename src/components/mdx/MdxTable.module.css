@@ -1,0 +1,10 @@
+.wrap {
+  margin-block: var(--space-6);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+/* A margem fica na moldura; a tabela em si encosta nela. */
+.wrap > table {
+  margin: 0;
+}

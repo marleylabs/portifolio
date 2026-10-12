@@ -85,6 +85,8 @@ select.input {
   margin: 0;
   color: var(--color-text-muted);
   font-size: var(--text-sm);
+  /* Contadores (ex.: 120/5.000): dígitos de largura fixa não "tremem" ao digitar. */
+  font-variant-numeric: tabular-nums;
 }
 
 /* ---------- Botão de envio ---------- */
@@ -114,7 +116,7 @@ select.input {
 
 .submit:active:not(:disabled) {
   transform: translateY(1px) scale(0.98);
-  transition-duration: 60ms;
+  transition-duration: var(--duration-press);
 }
 
 .submit:disabled {

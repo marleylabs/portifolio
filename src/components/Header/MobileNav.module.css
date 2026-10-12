@@ -2,7 +2,8 @@
   display: none;
 }
 
-@media (max-width: 720px) {
+/* Mesmo breakpoint do header (ver Header.module.css). */
+@media (max-width: 56rem) {
   .trigger {
     display: inline-grid;
   }

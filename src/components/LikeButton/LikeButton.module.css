@@ -32,7 +32,7 @@
 
 .button:active:not([aria-disabled="true"]) {
   transform: translateY(1px) scale(0.96);
-  transition-duration: 60ms;
+  transition-duration: var(--duration-press);
 }
 
 .button[aria-disabled="true"] {
@@ -102,6 +102,7 @@
   margin: 0;
   color: var(--color-text-muted);
   font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
 }
 
 .wrapper[data-status="unavailable"] .button {

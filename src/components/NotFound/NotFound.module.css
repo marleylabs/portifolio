@@ -69,7 +69,7 @@
 .eyes {
   transform-box: fill-box;
   transform-origin: center;
-  transition: transform 70ms ease-in;
+  transition: transform var(--duration-press) ease-in;
 }
 
 .art[data-blinking="true"] .eyes {

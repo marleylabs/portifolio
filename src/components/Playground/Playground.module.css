@@ -50,7 +50,7 @@
   overflow: hidden;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 45rem) {
   .playground {
     margin-inline: calc(var(--gutter) * -1);
   }

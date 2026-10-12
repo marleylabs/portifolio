@@ -92,6 +92,14 @@
 .logo {
   /* inline-block (não flex): o espaço entre as palavras é renderizado de verdade. */
   display: inline-block;
+  /*
+   * Telas muito estreitas: o nome encolhe com reticências ("Anderson Mar…") em vez de
+   * empurrar os botões para fora. clip (e não hidden) só no eixo x: o pulo das letras
+   * no hover continua visível.
+   */
+  min-width: 0;
+  overflow-x: clip;
+  text-overflow: ellipsis;
   padding-block: var(--space-2);
   color: var(--color-text);
   font-family: var(--font-heading);
@@ -106,8 +114,9 @@
   color: var(--color-text);
 }
 
+/* inline (não inline-flex): assim a reticência corta letra a letra, não a palavra inteira. */
 .logoWord {
-  display: inline-flex;
+  display: inline;
 }
 
 .logoWord:last-child {
@@ -215,7 +224,9 @@
   display: contents;
 }
 
-@media (max-width: 720px) {
+/* Breakpoint próprio do header (56rem, não o geral de 45rem): nome + 4 links + 4 botões
+   precisam de ~830px. Abaixo disso, menu ☰ — em vez de espremer o nome em reticências. */
+@media (max-width: 56rem) {
   .nav,
   .desktopOnly {
     display: none;

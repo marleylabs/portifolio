@@ -11,6 +11,9 @@
   --font-mono: var(--font-jetbrains), ui-monospace, "SFMono-Regular", monospace;
 
   /* Escala fluida: cresce suavemente entre ~360px e ~1200px de viewport. */
+  /* Rótulos pequenos (pílulas, metadados, contadores). Abaixo de --text-2xs não vale a pena: fica ilegível. */
+  --text-2xs: 0.75rem;
+  --text-xs: 0.8125rem;
   --text-sm: clamp(0.875rem, 0.85rem + 0.1vw, 0.9375rem);
   --text-base: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
   --text-lg: clamp(1.1875rem, 1.1rem + 0.4vw, 1.375rem);
@@ -32,11 +35,20 @@
   --space-16: 4rem;
   --space-24: 6rem;
 
+  /*
+   * Breakpoint principal (mobile ↔ desktop): 45rem (= 720px com a fonte padrão).
+   * Variáveis CSS não funcionam dentro de @media, e o @custom-media só vale no próprio
+   * arquivo (cada CSS Module é processado à parte). Por isso o valor 45rem se repete nos
+   * módulos: se mudar, procure por "45rem" em src/. Em rem, ele acompanha o zoom de texto.
+   * Exceções: o header troca para o menu ☰ em 56rem (é a largura de que ele precisa), e o
+   * Playground usa 768px porque precisa bater com o media query do Sandpack.
+   */
   --content-width: 65ch;
   --wide-width: 72rem;
   --gutter: clamp(1rem, 4vw, 2rem);
   --header-height: 4.5rem;
 
+  --radius-xs: 3px;
   --radius-sm: 6px;
   --radius-md: 12px;
   --radius-lg: 20px;
@@ -56,6 +68,8 @@
   --ease-spring: linear(0, 0.001, 0.041, 0.127, 0.242, 0.372, 0.504, 0.63, 0.745, 0.845, 0.928, 0.993, 1.042, 1.075, 1.095, 1.104, 1.105, 1.099, 1.089, 1.077, 1.063, 1.049, 1.036, 1.024, 1.014, 1.006, 0.999, 0.995, 0.991, 0.99, 0.989, 0.989, 0.99, 0.991, 0.992, 0.994, 0.995, 0.997, 0.998, 0.999, 1, 1, 1.001, 1.001, 1.001, 1.001, 1.001, 1.001, 1.001, 1.001, 1.001, 1, 1, 1, 1);
   --spring-duration: 800ms;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  /* "Afundar" de um botão ao apertar / piscar de olhos: rápido de propósito. */
+  --duration-press: 60ms;
   --duration-fast: 150ms;
   --duration-base: 250ms;
   --duration-theme: 350ms;

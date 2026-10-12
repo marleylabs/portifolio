@@ -59,7 +59,7 @@
   margin-top: 1.25em;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 45rem) {
   .section {
     margin-inline: calc(var(--gutter) * -1);
     padding: var(--space-6) var(--gutter);

@@ -80,12 +80,12 @@
 /* Pressionado: afunda na hora (sem mola) — a mola fica para a volta. */
 .pushable:active .front {
   transform: translateY(-1px);
-  transition-duration: 40ms;
+  transition-duration: var(--duration-press);
   transition-timing-function: linear;
 }
 
 .pushable:active .shadow {
   transform: translateY(1px);
-  transition-duration: 40ms;
+  transition-duration: var(--duration-press);
   transition-timing-function: linear;
 }

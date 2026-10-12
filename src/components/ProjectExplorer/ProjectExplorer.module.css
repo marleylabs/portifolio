@@ -37,7 +37,7 @@
 
 .filter:active:not(:disabled) {
   transform: translateY(1px) scale(0.97);
-  transition-duration: 60ms;
+  transition-duration: var(--duration-press);
 }
 
 /* Selecionado: a pílula ganha contorno na própria cor do texto. */
@@ -51,7 +51,7 @@
 
 /* Sem opacidade: com ela o número ficava abaixo do contraste AA nas pílulas claras. */
 .count {
-  font-size: 0.75rem;
+  font-size: var(--text-2xs);
   font-weight: 700;
 }
 

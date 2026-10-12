@@ -91,7 +91,7 @@
 .eyes {
   transform-box: fill-box;
   transform-origin: center;
-  transition: transform 60ms ease-in;
+  transition: transform var(--duration-press) ease-in;
 }
 
 .avatar[data-blinking="true"] .eyes {
