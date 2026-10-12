@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useAmbientMotionPaused } from "@/hooks/use-preferences";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 import { useRandomInterval } from "@/hooks/use-random-interval";
 import styles from "./NotFound.module.css";
@@ -46,7 +47,8 @@ export function NotFoundArt() {
   }, [prefersReducedMotion]);
 
   const blink = useCallback(() => setIsBlinking(true), []);
-  useRandomInterval(blink, prefersReducedMotion ? null : 2000, prefersReducedMotion ? null : 5000);
+  const ambientPaused = useAmbientMotionPaused();
+  useRandomInterval(blink, ambientPaused ? null : 2000, ambientPaused ? null : 5000);
   useEffect(() => {
     if (!isBlinking) return;
     const id = window.setTimeout(() => setIsBlinking(false), 140);

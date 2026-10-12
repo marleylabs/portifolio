@@ -58,6 +58,7 @@ export function NewsletterForm() {
           name="email"
           required
           autoComplete="email"
+          spellCheck={false}
           placeholder="voce@exemplo.com"
           defaultValue={state.values?.email}
           aria-invalid={error ? true : undefined}

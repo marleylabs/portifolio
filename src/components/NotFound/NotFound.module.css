@@ -23,6 +23,11 @@
   animation-delay: -1.6s;
 }
 
+/* "Pausar animações" (botão no header): congela onde está. */
+:global(:root[data-motion="paused"]) .digit {
+  animation-play-state: paused;
+}
+
 @keyframes bob {
   from {
     transform: translateY(-6%) rotate(-6deg);
@@ -38,6 +43,11 @@
   height: 0.95em;
   overflow: visible;
   animation: wobble 4s ease-in-out infinite;
+}
+
+/* "Pausar animações" (botão no header): congela onde está. */
+:global(:root[data-motion="paused"]) .face {
+  animation-play-state: paused;
 }
 
 @keyframes wobble {

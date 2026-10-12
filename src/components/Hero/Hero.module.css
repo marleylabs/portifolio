@@ -125,6 +125,11 @@
   animation-delay: -6s;
 }
 
+/* "Pausar animações" (botão no header): congela onde está. */
+:global(:root[data-motion="paused"]) .wave {
+  animation-play-state: paused;
+}
+
 /* Flutuação lenta: deriva lateral + sobe e desce. A folga lateral vem do overscan. */
 @keyframes float {
   from {

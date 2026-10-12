@@ -1,0 +1,23 @@
+.pause,
+.play {
+  transform-box: view-box;
+  transform-origin: 12px 12px;
+  transition:
+    transform var(--spring-duration) var(--ease-spring),
+    opacity var(--duration-fast) var(--ease-out);
+}
+
+.play {
+  transform: scale(0) rotate(-90deg);
+  opacity: 0;
+}
+
+:global(:root[data-motion="paused"]) .pause {
+  transform: scale(0) rotate(90deg);
+  opacity: 0;
+}
+
+:global(:root[data-motion="paused"]) .play {
+  transform: scale(1) rotate(0deg);
+  opacity: 1;
+}

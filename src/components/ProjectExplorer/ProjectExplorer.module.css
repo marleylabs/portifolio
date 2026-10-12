@@ -49,9 +49,10 @@
   cursor: default;
 }
 
+/* Sem opacidade: com ela o número ficava abaixo do contraste AA nas pílulas claras. */
 .count {
   font-size: 0.75rem;
-  opacity: 0.75;
+  font-weight: 700;
 }
 
 .grid {

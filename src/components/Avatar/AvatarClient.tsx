@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { useBoop } from "@/hooks/use-boop";
+import { useAmbientMotionPaused } from "@/hooks/use-preferences";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 import { useRandomInterval } from "@/hooks/use-random-interval";
 import { Mascot } from "./Mascot";
@@ -45,7 +46,9 @@ export function AvatarClient({ images, alt }: { images: AvatarImages | null; alt
   }, [isBlinking]);
 
   // Piscadas espontâneas, em ritmo irregular (como as de verdade).
-  useRandomInterval(blink, prefersReducedMotion ? null : 2500, prefersReducedMotion ? null : 6500);
+  // Param com o botão "Pausar animações"; a piscada ao passar o mouse continua (é resposta a um gesto).
+  const ambientPaused = useAmbientMotionPaused();
+  useRandomInterval(blink, ambientPaused ? null : 2500, ambientPaused ? null : 6500);
 
   function handlePointerEnter() {
     tilt();

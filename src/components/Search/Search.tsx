@@ -197,7 +197,10 @@ export function Search() {
               }}
               onKeyDown={handleInputKeyDown}
             />
-            <kbd className={styles.kbd}>Esc</kbd>
+            {/* Clicável: no celular não há tecla Esc. */}
+            <button type="button" className={styles.close} onClick={close} aria-label="Fechar busca">
+              <kbd className={styles.kbd}>Esc</kbd>
+            </button>
           </div>
 
           <ul id={listId} role="listbox" aria-label="Resultados" className={styles.results}>

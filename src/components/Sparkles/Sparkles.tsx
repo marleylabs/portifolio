@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
+import { useAmbientMotionPaused } from "@/hooks/use-preferences";
 import { randomBetween, useRandomInterval } from "@/hooks/use-random-interval";
 import styles from "./Sparkles.module.css";
 
@@ -52,7 +52,7 @@ const STATIC_SPARKLES: Sparkle[] = [
  * - As posições são sorteadas só no cliente, depois de montar: sortear no servidor
  *   geraria HTML diferente do cliente (erro de hidratação).
  * - Só gera estrelas enquanto o trecho está visível (IntersectionObserver).
- * - Com prefers-reduced-motion, mostra três estrelas paradas.
+ * - Com prefers-reduced-motion ou "Pausar animações", mostra três estrelas paradas.
  * - As estrelas são decorativas (aria-hidden): leitores de tela leem só o texto.
  */
 export function Sparkles({
@@ -62,7 +62,7 @@ export function Sparkles({
   maxDelay = 450,
   lifetime = 750,
 }: SparklesProps) {
-  const prefersReducedMotion = usePrefersReducedMotion();
+  const paused = useAmbientMotionPaused();
   const wrapperRef = useRef<HTMLSpanElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [sparkles, setSparkles] = useState<Sparkle[]>([]);
@@ -75,7 +75,7 @@ export function Sparkles({
     return () => observer.disconnect();
   }, []);
 
-  const isAnimating = isVisible && !prefersReducedMotion;
+  const isAnimating = isVisible && !paused;
 
   useRandomInterval(
     () => {
@@ -89,14 +89,14 @@ export function Sparkles({
     isAnimating ? maxDelay : null,
   );
 
-  const visibleSparkles = prefersReducedMotion ? STATIC_SPARKLES : sparkles;
+  const visibleSparkles = paused ? STATIC_SPARKLES : sparkles;
 
   return (
     <span
       ref={wrapperRef}
       className={styles.wrapper}
       style={{ "--sparkle-color": color, "--sparkle-lifetime": `${lifetime}ms` } as CSSProperties}
-      data-static={prefersReducedMotion}
+      data-static={paused}
     >
       {visibleSparkles.map(({ id, size, style }) => (
         <span key={id} className={styles.sparkle} style={style} aria-hidden="true">

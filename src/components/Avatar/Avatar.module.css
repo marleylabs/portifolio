@@ -12,6 +12,11 @@
   animation: breathe 4.8s ease-in-out infinite;
 }
 
+/* "Pausar animações" (botão no header): congela onde está. */
+:global(:root[data-motion="paused"]) .breathe {
+  animation-play-state: paused;
+}
+
 @keyframes breathe {
   0%,
   100% {

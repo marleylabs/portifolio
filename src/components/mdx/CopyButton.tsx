@@ -10,14 +10,21 @@ const spring = { type: "spring", stiffness: 500, damping: 22 } as const;
 
 export function CopyButton() {
   const [copied, setCopied] = useState(false);
+  const [failed, setFailed] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const playSound = useSoundEffect();
 
   useEffect(() => {
-    if (!copied) return;
-    const id = window.setTimeout(() => setCopied(false), 2000);
+    if (!copied && !failed) return;
+    const id = window.setTimeout(
+      () => {
+        setCopied(false);
+        setFailed(false);
+      },
+      copied ? 2000 : 4000,
+    );
     return () => window.clearTimeout(id);
-  }, [copied]);
+  }, [copied, failed]);
 
   async function copy() {
     const code = buttonRef.current?.closest("figure")?.querySelector("pre code");
@@ -27,14 +34,15 @@ export function CopyButton() {
       setCopied(true);
       playSound("success");
     } catch {
-      // Sem permissão de clipboard: o usuário ainda pode selecionar o texto manualmente.
+      // Sem permissão de clipboard: avisa, e o leitor ainda pode selecionar o texto.
+      setFailed(true);
     }
   }
 
   return (
     <button ref={buttonRef} type="button" className={styles.copy} onClick={copy}>
       <span className="visually-hidden" aria-live="polite">
-        {copied ? "Código copiado" : ""}
+        {copied ? "Código copiado" : failed ? "Não foi possível copiar. Selecione o código e copie manualmente." : ""}
       </span>
       <span aria-hidden="true" className={styles.copyIcon}>
         <MotionRoot>
@@ -64,7 +72,7 @@ export function CopyButton() {
           </AnimatePresence>
         </MotionRoot>
       </span>
-      <span>{copied ? "Copiado!" : "Copiar"}</span>
+      <span>{copied ? "Copiado!" : failed ? "Não copiou" : "Copiar"}</span>
     </button>
   );
 }

@@ -199,7 +199,8 @@ a:hover {
   position: absolute;
   top: var(--space-2);
   left: var(--space-2);
-  z-index: 100;
+  /* Acima do header (mesma camada de empilhamento): senão o logo o cobre. */
+  z-index: calc(var(--z-header) + 1);
   padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-sm);
   background: var(--color-primary);

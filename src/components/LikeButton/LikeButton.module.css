@@ -24,12 +24,13 @@
     box-shadow var(--duration-base) var(--ease-out);
 }
 
-.button:hover {
+/* Desativado (indisponível ou 10 curtidas) não sobe: parecia clicável sem ser. */
+.button:hover:not([aria-disabled="true"]) {
   transform: translateY(-3px);
   box-shadow: var(--shadow-lg);
 }
 
-.button:active {
+.button:active:not([aria-disabled="true"]) {
   transform: translateY(1px) scale(0.96);
   transition-duration: 60ms;
 }

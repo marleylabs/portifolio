@@ -33,3 +33,11 @@ button:hover,
 button:focus-visible {
   transform: translateY(-12px) scale(1.08);
 }
+
+/* Quem pediu menos movimento no sistema vê o estado final, sem a animação. */
+@media (prefers-reduced-motion: reduce) {
+  .mola,
+  .comum {
+    transition-duration: 0s;
+  }
+}

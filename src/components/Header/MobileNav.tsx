@@ -6,6 +6,7 @@ import { useEffect, useId, useRef, useState, type CSSProperties, type MouseEvent
 import iconButton from "@/components/IconButton/IconButton.module.css";
 import { useBoop } from "@/hooks/use-boop";
 import { useSoundEffect } from "@/components/Providers/SoundProvider";
+import { MotionToggle } from "@/components/MotionToggle/MotionToggle";
 import { SoundToggle } from "@/components/SoundToggle/SoundToggle";
 import { navigation } from "@/lib/site";
 import { isCurrentPath } from "./NavLinks";
@@ -121,8 +122,14 @@ export function MobileNav() {
           </nav>
 
           <div className={styles.preferences}>
-            <span>Sons</span>
-            <SoundToggle />
+            <div className={styles.preference}>
+              <span>Sons</span>
+              <SoundToggle />
+            </div>
+            <div className={styles.preference}>
+              <span>Animações</span>
+              <MotionToggle />
+            </div>
           </div>
         </div>
       </dialog>

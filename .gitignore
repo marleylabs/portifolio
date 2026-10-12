@@ -48,3 +48,6 @@ next-env.d.ts
 
 # relatórios do Lighthouse (linha de base e comparações)
 /.lighthouse/
+
+# capturas de tela das verificações (para revisão local)
+/capturas/
