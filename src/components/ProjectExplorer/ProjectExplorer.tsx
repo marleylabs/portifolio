@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { AnimatePresence, LazyMotion, MotionConfig, domMax, m } from "motion/react";
+import { AnimatePresence, LazyMotion, MotionConfig, m } from "motion/react";
 import { ProjectCard } from "@/components/ProjectCard/ProjectCard";
 import { pillStyle } from "@/components/StackPill/StackPill";
 import { useSoundEffect } from "@/components/Providers/SoundProvider";
@@ -13,6 +13,9 @@ type Technology = { name: string; count: number };
 
 const PARAM = "stack";
 const spring = { type: "spring", stiffness: 350, damping: 30 } as const;
+const loadFeatures = () => import("./motion-features").then((mod) => mod.default);
+// Capas da primeira linha: carregam já, com prioridade (são o maior elemento da tela).
+const EAGER_COVERS = 2;
 
 /**
  * Grid de projetos com filtro por tecnologia.
@@ -21,7 +24,7 @@ const spring = { type: "spring", stiffness: 350, damping: 30 } as const;
  *   history.replaceState — o Next sincroniza com useSearchParams sem ir ao servidor.
  * - Layout animations (Motion `layout`): cada card desliza da posição antiga para a
  *   nova; os que saem/entram encolhem/crescem. As features `domMax` (que incluem
- *   layout) só são baixadas nesta página.
+ *   layout) só são baixadas nesta página, e depois do resto (import assíncrono).
  * - Movimento reduzido: o grid troca na hora, sem animação.
  */
 export function ProjectExplorer({ projects, technologies }: { projects: ProjectSummary[]; technologies: Technology[] }) {
@@ -44,7 +47,7 @@ export function ProjectExplorer({ projects, technologies }: { projects: ProjectS
   }
 
   return (
-    <LazyMotion features={domMax} strict>
+    <LazyMotion features={loadFeatures} strict>
       <MotionConfig reducedMotion={prefersReducedMotion ? "always" : "never"}>
         <FilterBar technologies={technologies} selected={selected} onSelect={select} total={projects.length} />
 
@@ -56,7 +59,7 @@ export function ProjectExplorer({ projects, technologies }: { projects: ProjectS
 
         <ul className={styles.grid}>
           <AnimatePresence initial={false} mode="popLayout">
-            {visible.map((project) => (
+            {visible.map((project, index) => (
               <m.li
                 key={project.id}
                 layout
@@ -65,7 +68,7 @@ export function ProjectExplorer({ projects, technologies }: { projects: ProjectS
                 exit={hidden}
                 transition={spring}
               >
-                <ProjectCard entry={project} headingLevel={2} />
+                <ProjectCard entry={project} headingLevel={2} eager={index < EAGER_COVERS} />
               </m.li>
             ))}
           </AnimatePresence>
@@ -121,9 +124,9 @@ export function ProjectExplorerFallback({ projects, technologies }: { projects: 
     <>
       <FilterBar technologies={technologies} selected={null} total={projects.length} />
       <ul className={styles.grid}>
-        {projects.map((project) => (
+        {projects.map((project, index) => (
           <li key={project.id}>
-            <ProjectCard entry={project} headingLevel={2} />
+            <ProjectCard entry={project} headingLevel={2} eager={index < EAGER_COVERS} />
           </li>
         ))}
       </ul>

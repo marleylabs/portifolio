@@ -114,9 +114,10 @@
   color: var(--color-primary);
 }
 
+/* Sem will-change: 14 camadas permanentes gastavam memória; a animação (WAAPI) já
+   promove a letra só enquanto ela se mexe. */
 .logoLetter {
   display: inline-block;
-  will-change: transform;
 }
 
 /* ---------- Navegação ---------- */

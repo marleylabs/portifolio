@@ -24,7 +24,6 @@ export function MobileNav() {
   const pathname = usePathname();
   const playSound = useSoundEffect();
   const drawerId = useId();
-  const [boopStyle, boop] = useBoop({ x: 3, timing: 150 });
 
   // Navegou (inclusive pelo botão voltar)? Fecha o menu.
   useEffect(() => {
@@ -53,30 +52,7 @@ export function MobileNav() {
 
   return (
     <>
-      <button
-        type="button"
-        className={`${iconButton.button} ${styles.trigger}`}
-        onClick={open}
-        onPointerEnter={boop}
-        aria-label="Abrir menu"
-        aria-expanded={isOpen}
-        aria-controls={drawerId}
-      >
-        <span className={iconButton.icon} style={boopStyle}>
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            aria-hidden="true"
-          >
-            <line x1="4" y1="7" x2="20" y2="7" />
-            <line x1="4" y1="12" x2="20" y2="12" />
-            <line x1="4" y1="17" x2="14" y2="17" />
-          </svg>
-        </span>
-      </button>
+      <MenuTrigger onClick={open} isOpen={isOpen} controls={drawerId} />
 
       <dialog
         ref={dialogRef}
@@ -138,5 +114,36 @@ export function MobileNav() {
         </div>
       </dialog>
     </>
+  );
+}
+
+/** Botão ☰. Separado para que o "boop" do hover não re-renderize o drawer inteiro. */
+function MenuTrigger({ onClick, isOpen, controls }: { onClick: () => void; isOpen: boolean; controls: string }) {
+  const [boopStyle, boop] = useBoop({ x: 3, timing: 150 });
+  return (
+    <button
+      type="button"
+      className={`${iconButton.button} ${styles.trigger}`}
+      onClick={onClick}
+      onPointerEnter={boop}
+      aria-label="Abrir menu"
+      aria-expanded={isOpen}
+      aria-controls={controls}
+    >
+      <span className={iconButton.icon} style={boopStyle}>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          aria-hidden="true"
+        >
+          <line x1="4" y1="7" x2="20" y2="7" />
+          <line x1="4" y1="12" x2="20" y2="12" />
+          <line x1="4" y1="17" x2="14" y2="17" />
+        </svg>
+      </span>
+    </button>
   );
 }

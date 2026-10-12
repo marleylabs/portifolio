@@ -58,6 +58,21 @@
   grid-area: 1 / 1;
   width: 100%;
   height: 100%;
+  transition:
+    transform var(--spring-duration) var(--ease-spring),
+    opacity var(--duration-fast) var(--ease-out);
+}
+
+/* Troca copiar ↔ ✓: o que sai encolhe, o que entra cresce girando com a mola. */
+.checkGlyph,
+.copy[data-copied="true"] .copyGlyph {
+  transform: scale(0) rotate(-30deg);
+  opacity: 0;
+}
+
+.copy[data-copied="true"] .checkGlyph {
+  transform: none;
+  opacity: 1;
 }
 
 @media (max-width: 720px) {

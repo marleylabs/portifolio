@@ -11,13 +11,34 @@
   text-transform: uppercase;
 }
 
-/* A prévia estática reaproveita a moldura de código; zeramos a margem dela aqui. */
+/*
+ * Prévia estática com a altura exata do editor: um painel de --editor-height (+ bordas)
+ * no desktop; dois empilhados até 768px, que é onde o Sandpack empilha editor e prévia.
+ * O código é cortado com um degradê, e o aviso de carregamento fica por cima.
+ */
+.fallback {
+  position: relative;
+  height: calc(var(--editor-height) + 2px);
+  overflow: hidden;
+}
+
+@media screen and (max-width: 768px) {
+  .fallback {
+    height: calc(var(--editor-height) * 2 + 3px);
+  }
+}
+
 .fallback > figure {
+  height: 100%;
   margin: 0;
 }
 
 .loading {
-  margin: var(--space-2) 0 0 var(--space-1);
+  position: absolute;
+  inset: auto 0 0;
+  margin: 0;
+  padding: var(--space-12) var(--space-4) var(--space-3);
+  background: linear-gradient(transparent, var(--color-surface) 70%);
   color: var(--color-text-muted);
   font-size: var(--text-sm);
 }
