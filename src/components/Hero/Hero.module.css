@@ -51,27 +51,15 @@
 
 .title {
   margin: 0;
-  font-size: clamp(2.75rem, 1.6rem + 4.6vw, 5.25rem);
+  font-size: var(--text-display);
   font-weight: 800;
   letter-spacing: -0.035em;
   line-height: 1.02;
 }
 
-/* Nome em gradiente: as duas pontas (primary e accent) passam AA sobre o fundo. */
+/* Nome na cor da marca, sólida (o texto em gradiente era o cacoete de template mais visível). */
 .name {
-  background: linear-gradient(100deg, var(--color-primary), var(--color-accent));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  /* Sem suporte a background-clip: text, cai para a cor primária. */
-  -webkit-text-fill-color: transparent;
-}
-
-@supports not ((background-clip: text) or (-webkit-background-clip: text)) {
-  .name {
-    color: var(--color-primary);
-    -webkit-text-fill-color: currentColor;
-  }
+  color: var(--color-primary);
 }
 
 .subtitle {

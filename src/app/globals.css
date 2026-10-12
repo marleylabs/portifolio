@@ -227,6 +227,25 @@ a:hover {
 }
 
 /* Selo para conteúdo de exemplo (ex.: itens da página Sobre a substituir). */
+/*
+ * Rótulo em caixa alta (sobretítulos, categorias, títulos de coluna). :where() deixa a
+ * especificidade em zero: o módulo de cada componente ajusta margem e tamanho sem brigar
+ * com a ordem do CSS. .label-category: cor de categoria.
+ */
+:where(.label) {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+:where(.label-category) {
+  color: var(--color-secondary);
+}
+
 .example-badge {
   display: inline-block;
   margin-left: var(--space-2);

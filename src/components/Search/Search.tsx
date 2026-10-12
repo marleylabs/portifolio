@@ -194,7 +194,7 @@ export function Search() {
                   onPointerMove={() => setActiveIndex(index)}
                   {...(item.external && { target: "_blank", rel: "noopener noreferrer" })}
                 >
-                  <span className={styles.resultType}>{item.type}</span>
+                  <span className={`label label-category ${styles.resultType}`}>{item.type}</span>
                   <span className={styles.resultTitle}>
                     <Highlighted text={item.title} ranges={item.titleMatches} />
                     {item.external && (

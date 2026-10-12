@@ -5,6 +5,11 @@
   margin-bottom: var(--space-8);
 }
 
+/*
+ * Pílulas interativas (este filtro e o CategoryNav) seguem as mesmas regras: fonte mono,
+ * borda de 1px, mesma altura, hover com a mola e "selecionado" preenchido — a neutra na
+ * cor primária, a colorida com as próprias cores invertidas (mesmo contraste).
+ */
 .filter {
   --pill-bg: var(--color-surface);
   --pill-fg: var(--color-text);
@@ -14,7 +19,7 @@
   gap: var(--space-2);
   min-height: 2.5rem;
   padding: var(--space-1) var(--space-4);
-  border: 2px solid transparent;
+  border: 1px solid transparent;
   border-radius: var(--radius-full);
   background: var(--pill-bg);
   color: var(--pill-fg);
@@ -40,9 +45,16 @@
   transition-duration: var(--duration-press);
 }
 
-/* Selecionado: a pílula ganha contorno na própria cor do texto. */
 .filter[aria-pressed="true"] {
   border-color: var(--pill-fg);
+  background: var(--pill-fg);
+  color: var(--pill-bg);
+}
+
+.filter:not([data-colored])[aria-pressed="true"] {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
 }
 
 .filter:disabled {

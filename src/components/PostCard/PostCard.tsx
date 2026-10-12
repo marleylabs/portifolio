@@ -16,7 +16,7 @@ export function PostCard({ entry, showCategory = true, headingLevel = 3 }: PostC
 
   return (
     <article className={styles.card}>
-      {showCategory && <p className={styles.category}>{ARTICLE_CATEGORIES[category].label}</p>}
+      {showCategory && <p className={`label label-category ${styles.category}`}>{ARTICLE_CATEGORIES[category].label}</p>}
       <Heading className={styles.title}>
         <EntryLink href={href} isExternal={isExternal} className={styles.link}>
           {title}

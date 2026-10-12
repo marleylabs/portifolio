@@ -50,7 +50,7 @@ export function PlaygroundClient({ files, template, activeFile, height, title, c
 
   return (
     <section ref={containerRef} className={styles.playground} aria-label={title ? `Playground: ${title}` : "Playground de código"}>
-      {title && <p className={styles.title}>{title}</p>}
+      {title && <p className={`label ${styles.title}`}>{title}</p>}
       {isNear ? (
         <Suspense fallback={fallback}>
           <SandpackEditor files={files} template={template} activeFile={activeFile} height={height} />

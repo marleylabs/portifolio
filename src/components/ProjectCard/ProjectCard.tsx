@@ -34,7 +34,7 @@ export function ProjectCard({ entry, eager = false, headingLevel = 3 }: ProjectC
         />
       </div>
       <div className={styles.body}>
-        <p className={styles.eyebrow}>
+        <p className="label label-category">
           {PROJECT_CATEGORIES[category].label} · {publishedOn.slice(0, 4)}
         </p>
         <Heading className={styles.title}>

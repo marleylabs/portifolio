@@ -64,7 +64,7 @@ export function MobileNav() {
       >
         <div className={styles.panel}>
           <div className={styles.top}>
-            <span className={styles.heading}>Menu</span>
+            <span className="label">Menu</span>
             <button type="button" className={iconButton.button} onClick={close} aria-label="Fechar menu">
               <svg
                 viewBox="0 0 24 24"

@@ -71,13 +71,13 @@ export default async function HomePage() {
 
             <aside className={styles.sidebar} aria-label="Explorar artigos">
               <section aria-labelledby="categorias-title">
-                <h2 id="categorias-title" className={styles.sidebarTitle}>
+                <h2 id="categorias-title" className={`label ${styles.sidebarTitle}`}>
                   Navegar por categoria
                 </h2>
                 <CategoryNav categories={categories} className={styles.sidebarNav} />
               </section>
               <section aria-labelledby="destaques-title">
-                <h2 id="destaques-title" className={styles.sidebarTitle}>
+                <h2 id="destaques-title" className={`label ${styles.sidebarTitle}`}>
                   Destaques
                 </h2>
                 <PopularList articles={highlights} />

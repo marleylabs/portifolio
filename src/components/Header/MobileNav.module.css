@@ -91,13 +91,6 @@
   margin-bottom: var(--space-6);
 }
 
-.heading {
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
 
 .list {
   display: grid;
