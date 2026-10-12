@@ -1,0 +1,90 @@
+---
+title: Este portfólio
+slug: este-portfolio
+category: produto
+summary: Um site pessoal estático, acessível e cheio de pequenas interações. Ele foi pensado para ter personalidade sem atrapalhar a leitura.
+publishedOn: 2026-10-08
+tags: [portfólio, design]
+cover:
+  src: /projects/este-portfolio/cover.png
+  alt: Página inicial do portfólio, com o título "Olá, eu sou Anderson", um mascote laranja sorrindo e ondas coloridas ao fundo.
+stack: [Next.js, TypeScript, MDX, CSS Modules, Motion, Shiki, Zod]
+role: Design e desenvolvimento
+featured: true
+---
+
+## Problema
+
+Eu queria um lugar para publicar artigos e estudos de caso que fosse **agradável de ler** e
+tivesse **personalidade**. Portfólios costumam errar para um dos lados: ou são sóbrios demais e
+ninguém lembra deles, ou são tão animados que a leitura vira uma luta.
+
+E havia restrições que eu não queria negociar: carregar rápido em qualquer conexão, funcionar
+bem com leitor de tela e respeitar quem pede menos movimento no sistema.
+
+## Solução
+
+Um site **estático**, em que quase tudo é HTML e CSS, com JavaScript só onde há interação de
+verdade. A personalidade vem de detalhes pequenos e baratos:
+
+- Animações com física de **mola** geradas em CSS, sem biblioteca.
+- Sons sutis e opcionais, num único arquivo carregado sob demanda.
+- Tema claro/escuro sem "piscar" no carregamento.
+
+![Página inicial no tema escuro: o mesmo layout com fundo azul-escuro, ondas em tons frios e o mascote em tons pastel.](/projects/este-portfolio/hero-escuro.png "O tema escuro usa os mesmos tokens, com a variante escura de cada cor.")
+
+## Arquitetura
+
+O conteúdo mora em arquivos MDX. No build, uma camada de dados valida o frontmatter com Zod e
+o Next.js gera todas as páginas como HTML estático, que a Vercel serve pela CDN.
+
+<Diagram
+  title="Do arquivo MDX à página publicada"
+  columns={[
+    [{ id: "mdx", label: "Arquivos MDX", note: "content/" }],
+    [{ id: "content", label: "Camada de conteúdo", note: "lib/content.ts" }],
+    [
+      { id: "pages", label: "Páginas", note: "React Server Components" },
+      { id: "shiki", label: "Realce de código", note: "Shiki, no build" },
+    ],
+    [{ id: "html", label: "HTML estático", note: "next build" }],
+    [{ id: "cdn", label: "CDN da Vercel" }],
+  ]}
+  edges={[
+    ["mdx", "content", "valida (Zod)"],
+    ["content", "pages"],
+    ["content", "shiki"],
+    ["pages", "html"],
+    ["shiki", "html"],
+    ["html", "cdn", "deploy"],
+  ]}
+  caption="Nada é renderizado por requisição: o build falha se alguma página deixar de ser estática."
+/>
+
+## Desafios
+
+- **Tema sem flash num site estático.** Ler um cookie no servidor tornaria todas as páginas
+  dinâmicas. A saída foi um script minúsculo no `<head>` que aplica o tema antes da primeira
+  pintura.
+- **Molas sem biblioteca.** Uma simulação física gera curvas `linear()` do CSS. Assim, as
+  animações sempre presentes (header, botões) não custam JavaScript.
+- **Vidro fosco realista.** O `backdrop-filter` só enxerga o que está atrás do elemento; o blur
+  precisou de uma camada mais alta que o header, recortada por máscara.
+
+## Resultado
+
+Um site em que a página inicial carrega pouco JavaScript além do próprio React, com contraste
+AA verificado automaticamente nos dois temas e todas as animações desligadas para quem pede
+menos movimento.
+
+<BuiltWithAI tools={["Claude Code"]}>
+
+Construí o site em conversa com o **Claude Code**. Para cada parte (tema, header, hero, modelo de
+conteúdo), escrevi um briefing com o comportamento e as restrições, e a IA propôs as decisões
+técnicas, escreveu o código e testou num navegador headless.
+
+O que funcionou melhor foi tratar a IA como uma dupla de programação: briefings curtos e
+específicos, pedidos de explicação para cada decisão e revisão de tudo antes de seguir. Os testes
+automatizados no navegador pegaram problemas que eu não teria visto só lendo o código.
+
+</BuiltWithAI>

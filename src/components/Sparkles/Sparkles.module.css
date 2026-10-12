@@ -1,0 +1,53 @@
+.wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+}
+
+.sparkle {
+  position: absolute;
+  display: block;
+  color: var(--sparkle-color);
+  pointer-events: none;
+  /* Cresce e encolhe; `forwards` mantém a estrela invisível ao terminar. */
+  animation: come-in-out var(--sparkle-lifetime) ease-in-out forwards;
+}
+
+.sparkle svg {
+  display: block;
+  animation: spin calc(var(--sparkle-lifetime) * 1.4) linear;
+}
+
+/* Movimento reduzido: estrelas fixas, visíveis e sem animação. */
+.wrapper[data-static="true"] .sparkle,
+.wrapper[data-static="true"] .sparkle svg {
+  animation: none;
+}
+
+@keyframes come-in-out {
+  0% {
+    transform: scale(0);
+  }
+
+  50% {
+    transform: scale(1);
+  }
+
+  100% {
+    transform: scale(0);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(180deg);
+  }
+}

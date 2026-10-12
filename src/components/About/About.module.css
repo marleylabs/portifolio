@@ -1,0 +1,181 @@
+/* ---------- Foto ---------- */
+
+.photo {
+  position: relative;
+  width: min(22rem, 80vw);
+  aspect-ratio: 4 / 5;
+  margin: 0;
+  padding: var(--space-3) var(--space-3) var(--space-12);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+  transform: rotate(-3deg);
+  transition:
+    var(--transition-colors),
+    transform var(--spring-duration) var(--ease-spring);
+}
+
+.photo:hover {
+  transform: rotate(0deg) scale(1.02);
+}
+
+.photoImage {
+  object-fit: cover;
+  /* fill + padding do "polaroid": a imagem respeita a moldura. */
+  inset: var(--space-3) var(--space-3) var(--space-12) !important;
+  width: calc(100% - var(--space-3) * 2) !important;
+  height: calc(100% - var(--space-3) - var(--space-12)) !important;
+  border-radius: var(--radius-sm);
+}
+
+.photoPlaceholder {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  color: var(--color-on-primary);
+  font-family: var(--font-heading);
+  font-size: clamp(3rem, 10vw, 5rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+/* ---------- Linha do tempo ---------- */
+
+.timeline {
+  position: relative;
+  display: grid;
+  gap: var(--space-8);
+  margin: 0;
+  padding: 0 0 0 var(--space-8);
+  list-style: none;
+}
+
+/* A linha vertical que liga as etapas. */
+.timeline::before {
+  content: "";
+  position: absolute;
+  top: var(--space-2);
+  bottom: var(--space-2);
+  left: 0.45rem;
+  width: 2px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(var(--color-primary), var(--color-accent), var(--color-border));
+}
+
+.timelineItem {
+  position: relative;
+}
+
+.dot {
+  position: absolute;
+  top: 0.35rem;
+  left: calc(var(--space-8) * -1);
+  width: 1rem;
+  height: 1rem;
+  border: 3px solid var(--color-bg);
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary);
+  transition:
+    var(--transition-colors),
+    transform var(--spring-duration) var(--ease-spring);
+  transition-delay: 150ms;
+}
+
+/* Enquanto a etapa está escondida, o marcador fica "murcho"; ao revelar, estala com a mola. */
+[data-revealed="false"] .dot {
+  transform: scale(0);
+}
+
+.period {
+  margin: 0 0 var(--space-2);
+  color: var(--color-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+.card {
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.role {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+
+.organization {
+  margin: var(--space-1) 0 0;
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.description {
+  margin: var(--space-3) 0 0;
+  color: var(--color-text-muted);
+}
+
+/* ---------- Stack ---------- */
+
+.stackGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+  gap: var(--space-6);
+}
+
+.stackGroup {
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.stackTitle {
+  margin: 0 0 var(--space-4);
+  font-size: var(--text-lg);
+}
+
+.stackList {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Cada tecnologia na cor da sua pílula (--pill-bg/--pill-fg vêm de pillStyle). */
+.stackItem {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--pill-bg);
+  color: var(--pill-fg);
+  transition:
+    var(--transition-colors),
+    transform var(--spring-duration) var(--ease-spring);
+}
+
+.stackItem:hover {
+  transform: translateX(4px);
+}
+
+.stackName {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+.stackNote {
+  font-size: 0.8125rem;
+}

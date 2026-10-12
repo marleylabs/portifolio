@@ -1,0 +1,71 @@
+/*
+ * Shiki com `defaultColor: false`: cada token traz --shiki-light e --shiki-dark.
+ * Escolhemos qual usar pelo tema ativo — trocar de tema é só CSS.
+ */
+
+.shiki {
+  margin: 0;
+  padding: var(--space-4) 0;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  line-height: 1.65;
+  tab-size: 2;
+  background: var(--color-surface);
+}
+
+/* O <pre> é rolável (tabindex=0); a moldura tem overflow hidden, então o anel vai por dentro. */
+.shiki:focus-visible {
+  outline-offset: -3px;
+  border-radius: var(--radius-md);
+}
+
+.shiki code {
+  display: grid;
+  min-width: max-content;
+}
+
+.shiki .line {
+  padding-inline: var(--space-6);
+}
+
+/* Mesma regra do resto do site: o color-scheme ativo escolhe a variante. */
+.shiki,
+.shiki span {
+  color: light-dark(var(--shiki-light), var(--shiki-dark));
+}
+
+/* Linhas destacadas ({2-3} ou // [!code highlight]) e de diff ([!code ++] / [!code --]). */
+.shiki .line.highlighted {
+  background: var(--color-code-highlight);
+  box-shadow: inset 3px 0 0 var(--color-primary);
+}
+
+.shiki .line.diff.add {
+  background: var(--color-success-bg);
+  box-shadow: inset 3px 0 0 var(--color-success-border);
+}
+
+.shiki .line.diff.remove {
+  background: var(--color-danger-bg);
+  box-shadow: inset 3px 0 0 var(--color-danger-border);
+}
+
+/*
+ * Num fundo tingido, as cores mais claras do tema claro (ex.: o cinza dos comentários,
+ * 4.6:1 no branco) caem abaixo de AA. Nessas linhas, escurecemos o texto 15% em direção
+ * à cor de texto: todos os tokens ficam ≥ 4.7:1. No tema escuro já passa sem ajuste.
+ */
+.shiki :is(.line.highlighted, .line.diff) span {
+  color: light-dark(color-mix(in srgb, var(--shiki-light) 85%, var(--color-text)), var(--shiki-dark));
+}
+
+/* Código inline em texto corrido. */
+:not(pre) > code {
+  padding: 0.1em 0.35em;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-muted);
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  overflow-wrap: break-word;
+}

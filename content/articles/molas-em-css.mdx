@@ -1,0 +1,73 @@
+---
+title: Molas em CSS puro com linear()
+slug: molas-em-css
+category: css
+summary: Durações e curvas de Bézier são previsíveis, mas raramente parecem vivas. Neste artigo eu mostro como simular uma mola de verdade e transformá-la numa curva CSS. Sem nenhuma biblioteca de animação!
+publishedOn: 2026-10-08
+updatedOn: 2026-10-09
+tags: [css, animação]
+---
+
+Animações baseadas em duração ("faça isso em 300ms com ease-out") são previsíveis, mas
+raramente parecem *vivas*. Objetos reais não sabem quanto tempo vão levar para chegar a
+algum lugar: eles têm massa, são puxados por uma força e perdem energia com o atrito.
+
+Bibliotecas como o [Motion](https://motion.dev) simulam isso em JavaScript. Mas, para
+transições simples de estado, dá para ter o mesmo resultado só com CSS.
+
+## A função linear()
+
+Ao contrário do que o nome sugere, `linear()` não é uma reta: ela recebe uma lista de pontos
+e liga cada um ao próximo com uma reta. Com pontos suficientes, qualquer curva fica bem
+aproximada, inclusive uma que **passa do destino e volta**, algo que `cubic-bezier()` não
+consegue fazer mais de uma vez<Asterisk>Uma `cubic-bezier()` até passa do destino uma vez (com valores acima de 1), mas não consegue oscilar de volta como uma mola.</Asterisk>.
+
+```css title="tokens.css" {2-3}
+:root {
+  --ease-spring: linear(0, 0.127, 0.372, 0.63, 0.845, 0.993, 1.075, 1.105, 1.089, 1.049, 1.014, 0.995, 0.989, 0.992, 0.998, 1);
+  --spring-duration: 800ms;
+}
+
+.botao {
+  transition: transform var(--spring-duration) var(--ease-spring);
+}
+```
+
+## Veja a diferença
+
+Passe o mouse (ou o foco do teclado) nos dois botões. Depois, edite os valores à vontade: a
+prévia atualiza enquanto você digita.
+
+<Playground title="Mola × ease-out" dir="molas-em-css" activeFile="/styles.css" />
+
+## Gerando os pontos
+
+Os pontos vêm de uma simulação simples: a cada passo, a força da mola puxa o objeto para o
+destino e o amortecimento freia a velocidade.
+
+```js title="scripts/spring-curve.mjs"
+const force = -stiffness * (x - 1) - damping * v;
+v += (force / mass) * dt; // [!code highlight]
+x += v * dt;
+```
+
+Rodamos a simulação até o objeto parar, amostramos uns 50 valores e pronto: temos a curva
+e a duração "natural" da mola.
+
+<Sidenote type="success">
+  Aumentar o `damping` reduz o quique. Aumentar o `stiffness` deixa a mola mais rápida.
+  Comece com 300 / 20 para interfaces: tem personalidade sem chamar atenção demais.
+</Sidenote>
+
+<Spacer size="sm" />
+
+## Quando não usar
+
+Molas em CSS são ótimas para transições entre **dois estados conhecidos**. Se a animação
+precisa ser interrompida no meio e continuar com a velocidade atual (arrastar, gestos), aí
+uma simulação de verdade em JavaScript ainda faz diferença.
+
+<Sidenote type="warning">
+  Respeite `prefers-reduced-motion`. Quem pediu menos movimento não deve ver nada
+  quicando, por mais charmoso que seja.
+</Sidenote>

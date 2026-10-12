@@ -1,0 +1,70 @@
+.toc {
+  position: sticky;
+  /*
+   * Folga generosa abaixo do header: o vidro fosco amostra a faixa logo abaixo da borda
+   * (ver Header.module.css); mantendo o sumário um pouco mais longe, ele não "mancha" o
+   * vidro enquanto está parado.
+   */
+  top: calc(var(--header-height) + var(--space-12));
+  max-height: calc(100dvh - var(--header-height) - var(--space-16));
+  overflow-y: auto;
+  font-size: var(--text-sm);
+}
+
+.title {
+  margin: 0 0 var(--space-3);
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.list {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list li[data-depth="3"] {
+  padding-left: var(--space-4);
+}
+
+.link {
+  position: relative;
+  display: block;
+  padding: var(--space-1) 0 var(--space-1) var(--space-3);
+  color: var(--color-text-muted);
+  line-height: 1.4;
+  text-decoration: none;
+  transition: var(--transition-colors);
+}
+
+/* Barrinha da seção atual: cresce com a mola dos tokens. */
+.link::before {
+  content: "";
+  position: absolute;
+  inset: var(--space-1) auto var(--space-1) 0;
+  width: 2px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  transform: scaleY(0);
+  transition:
+    var(--transition-colors),
+    transform var(--spring-duration) var(--ease-spring);
+}
+
+.link:hover {
+  color: var(--color-text);
+}
+
+.link[aria-current="location"] {
+  color: var(--color-primary);
+}
+
+.link[aria-current="location"]::before {
+  transform: scaleY(1);
+}

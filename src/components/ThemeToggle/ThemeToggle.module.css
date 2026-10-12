@@ -1,0 +1,84 @@
+/*
+ * Sol (claro) → lua (escuro), tudo com a mola dos tokens (--ease-spring):
+ * - o ícone inteiro gira um pouco;
+ * - os raios giram e encolhem em direção ao centro, um após o outro (stagger);
+ * - o disco cresce e o círculo da máscara desliza para dentro, recortando a lua.
+ * Na volta, o mesmo caminho ao contrário.
+ *
+ * O estado vem de :root[data-theme]; o bloco @media no fim cobre visitas sem JS.
+ */
+
+.icon,
+.body,
+.maskCircle,
+.rays,
+.ray {
+  transform-box: view-box;
+  transform-origin: 12px 12px;
+}
+
+.icon {
+  transition: transform var(--spring-duration) var(--ease-spring);
+}
+
+.body,
+.maskCircle {
+  transition: transform var(--spring-duration) var(--ease-spring);
+}
+
+.rays {
+  transition: transform var(--spring-duration) var(--ease-spring);
+}
+
+.ray {
+  transition:
+    transform var(--spring-duration) var(--ease-spring),
+    opacity var(--duration-base) var(--ease-out);
+  transition-delay: calc(var(--i) * 25ms);
+}
+
+/* ---------- Tema escuro: lua ---------- */
+:global(:root[data-theme="dark"]) .icon {
+  transform: rotate(40deg);
+}
+
+:global(:root[data-theme="dark"]) .body {
+  transform: scale(1.7);
+}
+
+:global(:root[data-theme="dark"]) .maskCircle {
+  transform: translate(-7px, 4px);
+}
+
+:global(:root[data-theme="dark"]) .rays {
+  transform: rotate(-90deg);
+}
+
+:global(:root[data-theme="dark"]) .ray {
+  transform: scale(0);
+  opacity: 0;
+}
+
+/* ---------- Sem JS e com sistema escuro: mesmo visual ---------- */
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme])) .icon {
+    transform: rotate(40deg);
+  }
+
+  :global(:root:not([data-theme])) .body {
+    transform: scale(1.7);
+  }
+
+  :global(:root:not([data-theme])) .maskCircle {
+    transform: translate(-7px, 4px);
+  }
+
+  :global(:root:not([data-theme])) .rays {
+    transform: rotate(-90deg);
+  }
+
+  :global(:root:not([data-theme])) .ray {
+    transform: scale(0);
+    opacity: 0;
+  }
+}

@@ -1,0 +1,41 @@
+.playground {
+  margin: var(--space-8) calc(var(--space-6) * -1);
+}
+
+.title {
+  margin: 0 0 var(--space-2) var(--space-1);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* A prévia estática reaproveita a moldura de código; zeramos a margem dela aqui. */
+.fallback > figure {
+  margin: 0;
+}
+
+.loading {
+  margin: var(--space-2) 0 0 var(--space-1);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+/* Sandpack: bordas e cantos alinhados ao resto do site. */
+.playground :global(.sp-layout) {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+@media (max-width: 720px) {
+  .playground {
+    margin-inline: calc(var(--gutter) * -1);
+  }
+
+  .playground :global(.sp-layout) {
+    border-inline: none;
+    border-radius: 0;
+  }
+}

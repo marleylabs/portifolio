@@ -1,0 +1,10 @@
+.blocker {
+  position: sticky;
+  top: 0;
+  /* Acima do conteúdo sticky da coluna; abaixo do header (que está fora do <main>). */
+  z-index: 1;
+  height: var(--header-height);
+  /* Precisa ser idêntico ao fundo da seção, senão aparece uma "emenda". */
+  background: var(--color-bg);
+  transition: var(--transition-colors);
+}

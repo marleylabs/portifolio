@@ -1,0 +1,64 @@
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-8);
+}
+
+.filter {
+  --pill-bg: var(--color-surface);
+  --pill-fg: var(--color-text);
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 2.5rem;
+  padding: var(--space-1) var(--space-4);
+  border: 2px solid transparent;
+  border-radius: var(--radius-full);
+  background: var(--pill-bg);
+  color: var(--pill-fg);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    var(--transition-colors),
+    transform var(--spring-duration) var(--ease-spring);
+}
+
+.filter:not([data-colored]) {
+  border-color: var(--color-border);
+}
+
+.filter:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.filter:active:not(:disabled) {
+  transform: translateY(1px) scale(0.97);
+  transition-duration: 60ms;
+}
+
+/* Selecionado: a pílula ganha contorno na própria cor do texto. */
+.filter[aria-pressed="true"] {
+  border-color: var(--pill-fg);
+}
+
+.filter:disabled {
+  cursor: default;
+}
+
+.count {
+  font-size: 0.75rem;
+  opacity: 0.75;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+  gap: var(--space-8) var(--space-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

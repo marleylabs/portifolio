@@ -1,0 +1,19 @@
+.section {
+  max-width: var(--content-width);
+  margin: var(--space-16) auto 0;
+  padding: var(--space-12) var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-muted);
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--text-2xl);
+}
+
+.lead {
+  margin: var(--space-2) 0 var(--space-8);
+  color: var(--color-text-muted);
+}

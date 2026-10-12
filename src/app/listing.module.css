@@ -1,0 +1,40 @@
+.container {
+  max-width: var(--wide-width);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.postList {
+  display: grid;
+  gap: var(--space-2);
+  max-width: calc(var(--content-width) + var(--space-12));
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.section + .section {
+  margin-top: var(--space-16);
+}
+
+.sectionTitle {
+  max-width: calc(var(--content-width) + var(--space-12));
+  margin: 0 auto var(--space-4);
+  padding-inline: var(--space-6);
+  font-size: var(--text-xl);
+}
+
+.projectGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+  gap: var(--space-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (max-width: 720px) {
+  .postList {
+    margin-inline: calc(var(--gutter) * -1);
+  }
+}

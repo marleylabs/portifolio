@@ -1,0 +1,126 @@
+/* Tipografia de leitura longa: coluna de ~65ch e ritmo vertical generoso. */
+
+.prose {
+  max-width: var(--content-width);
+  margin-inline: auto;
+  font-size: var(--text-base);
+}
+
+.prose > * + * {
+  margin-top: 1.25em;
+}
+
+.prose p,
+.prose ul,
+.prose ol {
+  margin-block: 0;
+}
+
+.prose * + p,
+.prose * + ul,
+.prose * + ol {
+  margin-top: 1.25em;
+}
+
+.prose h2 {
+  margin-top: 2.5em;
+  margin-bottom: 0;
+  font-size: var(--text-2xl);
+}
+
+.prose h3 {
+  margin-top: 2em;
+  margin-bottom: 0;
+  font-size: var(--text-xl);
+}
+
+.prose h2 + *,
+.prose h3 + * {
+  margin-top: 0.75em;
+}
+
+.prose li + li {
+  margin-top: 0.5em;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.4em;
+}
+
+.prose li::marker {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.prose blockquote {
+  margin-inline: 0;
+  padding-left: var(--space-6);
+  border-left: 3px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.prose strong {
+  font-weight: 700;
+}
+
+.prose hr {
+  margin-block: var(--space-12);
+  border: none;
+  border-top: 1px solid var(--color-border);
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.prose th,
+.prose td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.prose th {
+  font-family: var(--font-heading);
+}
+
+/*
+ * Links do texto: um sublinhado discreto (30% da cor) que se preenche da esquerda para
+ * a direita no hover/foco. Feito com background (não text-decoration) para poder animar;
+ * box-decoration-break mantém o efeito em links que quebram linha.
+ * :not([class]) pega só links escritos no Markdown (âncoras de título têm classe).
+ */
+.prose a:not([class]) {
+  --underline-faint: color-mix(in srgb, currentColor 30%, transparent);
+
+  padding-bottom: 0.1em;
+  color: var(--color-primary);
+  text-decoration: none;
+  background-image:
+    linear-gradient(currentColor, currentColor),
+    linear-gradient(var(--underline-faint), var(--underline-faint));
+  background-position:
+    0 100%,
+    0 100%;
+  background-repeat: no-repeat;
+  background-size:
+    0% 2px,
+    100% 2px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition:
+    var(--transition-colors),
+    background-size 450ms var(--ease-out);
+}
+
+.prose a:not([class]):hover,
+.prose a:not([class]):focus-visible {
+  color: var(--color-primary-hover);
+  background-size:
+    100% 2px,
+    100% 2px;
+}

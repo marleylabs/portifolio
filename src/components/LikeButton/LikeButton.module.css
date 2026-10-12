@@ -1,0 +1,108 @@
+.wrapper {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+}
+
+.button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 5.5rem;
+  height: 5.5rem;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  color: var(--color-primary);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    var(--transition-colors),
+    transform var(--spring-duration) var(--ease-spring),
+    box-shadow var(--duration-base) var(--ease-out);
+}
+
+.button:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.button:active {
+  transform: translateY(1px) scale(0.96);
+  transition-duration: 60ms;
+}
+
+.button[aria-disabled="true"] {
+  cursor: default;
+}
+
+.heart {
+  display: block;
+  width: 3rem;
+  height: 3rem;
+  /* O squash & stretch "apoia" o coração na base, como se tivesse peso. */
+  transform-origin: 50% 85%;
+}
+
+.heart svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.fill {
+  transform-box: fill-box;
+  transition: transform var(--spring-duration) var(--ease-spring);
+}
+
+.outline {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+}
+
+/* Cheio: um brilho suave em volta, só cor (não é movimento). */
+.button[data-full="true"] {
+  box-shadow:
+    var(--shadow-md),
+    0 0 0 4px color-mix(in srgb, var(--color-primary) 18%, transparent);
+}
+
+/* Partículas saem do centro do coração e podem voar para fora do botão. */
+.particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.count {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin: var(--space-2) 0 0;
+  color: var(--color-text);
+  font-family: var(--font-heading);
+  font-size: var(--text-xl);
+  font-weight: 800;
+}
+
+.countLabel {
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.hint {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.wrapper[data-status="unavailable"] .button {
+  opacity: 0.6;
+}

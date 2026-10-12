@@ -1,0 +1,242 @@
+@import "../styles/tokens.css";
+@import "../styles/code.css";
+
+/* ---------- Reset enxuto ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* Reserva o espaço da barra de rolagem: travar o scroll não desloca o layout. */
+  scrollbar-gutter: stable;
+  /* Fundo também no <html>: cobre o overscroll e é a cor lida para o theme-color. */
+  background: var(--color-bg);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--header-height) + var(--space-4));
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+main {
+  flex: 1;
+  /*
+   * Contenção de camadas: todo o conteúdo vive num contexto de empilhamento próprio.
+   * Um destaque com position/z-index (demo interativa, tooltip…) fica preso aqui dentro
+   * e nunca é pintado POR CIMA do header, por maior que seja o z-index. (O caso inverso
+   * — conteúdo sticky aparecendo ATRÁS do vidro do header — é resolvido pelo
+   * componente HeaderBlocker.)
+   */
+  isolation: isolate;
+  z-index: var(--z-content);
+}
+
+/* Drawer ou busca abertos: trava o scroll da página (só CSS, sem JS). */
+:root:has(dialog[open]) {
+  overflow: hidden;
+  /*
+   * O ::backdrop não cobre a faixa reservada pelo scrollbar-gutter; pintamos o fundo do
+   * <html> com a mesma cor resultante do backdrop para não sobrar uma tira clara.
+   */
+  background-color: color-mix(in srgb, var(--color-text) 30%, var(--color-bg));
+  /*
+   * A transição só existe neste estado (vale para a entrada). Fora dele o <html> não
+   * transiciona: o theme-color é lido do fundo do <html> e precisa do valor final.
+   */
+  transition: background-color var(--duration-base) var(--ease-out);
+}
+
+img,
+picture,
+video,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+
+p,
+li {
+  text-wrap: pretty;
+  overflow-wrap: break-word;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.18em;
+}
+
+a:hover {
+  color: var(--color-primary-hover);
+}
+
+::selection {
+  background: var(--color-selection);
+  color: var(--color-text);
+}
+
+/* ---------- Foco visível ---------- */
+/*
+ * Anel de foco em todo elemento interativo (só para teclado: :focus-visible).
+ * - outline (e não box-shadow): segue a forma do elemento (inclusive cantos
+ *   arredondados), não ocupa espaço e não briga com sombras dos componentes;
+ * - ao aparecer, o anel "encaixa" com a mola: nasce afastado e transparente e assenta
+ *   a 3px. É uma animation (não transition) para não colidir com as transições
+ *   próprias de cada componente. Componentes que desenham o anel em outro elemento
+ *   (cards) reaproveitam a mesma animação via var(--focus-ring-animation).
+ */
+:root {
+  --focus-ring-animation: focus-ring-pop var(--spring-duration) var(--ease-spring);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+  animation: var(--focus-ring-animation);
+}
+
+@keyframes focus-ring-pop {
+  from {
+    outline-color: transparent;
+    outline-offset: 10px;
+  }
+}
+
+/*
+ * Alvos de foco só programático (tabindex="-1": o <main> do "Pular para o conteúdo",
+ * títulos que recebem foco após uma ação) não ganham anel — eles não são controles.
+ */
+[tabindex="-1"]:focus {
+  outline: none;
+}
+
+/* Alto contraste do Windows: cor do sistema, sem animação. */
+@media (forced-colors: active) {
+  :focus-visible {
+    outline-color: Highlight;
+    animation: none;
+  }
+}
+
+/* ---------- Troca de tema ---------- */
+/*
+ * Só existe enquanto a classe .theme-transition está no <html> (≈350ms após o clique) e
+ * só transiciona propriedades de cor — nunca `all`. O :where() zera a especificidade:
+ * componentes com `transition` própria (molas de transform etc.) não são sobrescritos;
+ * eles incluem var(--transition-colors) na própria lista.
+ */
+:where(.theme-transition) *,
+:where(.theme-transition) *::before,
+:where(.theme-transition) *::after {
+  transition: var(--transition-colors), box-shadow var(--duration-theme) var(--ease-out);
+}
+
+/* ---------- Movimento reduzido ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* ---------- Utilitários ---------- */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: 100;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-weight: 700;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+  color: var(--color-on-primary);
+}
+
+/* ---------- Revelar ao rolar (componente Reveal) ---------- */
+[data-reveal] {
+  transition:
+    opacity 500ms var(--ease-out),
+    transform var(--spring-duration) var(--ease-spring);
+}
+
+[data-revealed="false"] {
+  opacity: 0;
+  transform: translateY(2rem);
+}
+
+/* Selo para conteúdo de exemplo (ex.: itens da página Sobre a substituir). */
+.example-badge {
+  display: inline-block;
+  margin-left: var(--space-2);
+  padding: 0.05em 0.6em;
+  border: 1px dashed var(--color-warning-border);
+  border-radius: var(--radius-full);
+  background: var(--color-warning-bg);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  vertical-align: middle;
+}

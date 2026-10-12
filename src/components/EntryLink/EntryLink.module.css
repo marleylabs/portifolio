@@ -1,0 +1,8 @@
+.icon {
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
+  margin-left: 0.3em;
+  vertical-align: 0.05em;
+  color: var(--color-text-muted);
+}

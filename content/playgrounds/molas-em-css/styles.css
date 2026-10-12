@@ -1,0 +1,35 @@
+:root {
+  --ease-spring: linear(0, 0.127, 0.372, 0.63, 0.845, 0.993, 1.075, 1.105, 1.089, 1.049, 1.014, 0.995, 0.989, 0.992, 0.998, 1);
+}
+
+body {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  padding-top: 64px;
+  font-family: system-ui, sans-serif;
+}
+
+button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 999px;
+  background: #b83a0e;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* Mude 800ms ou a curva e veja a diferença. */
+.mola {
+  transition: transform 800ms var(--ease-spring);
+}
+
+.comum {
+  transition: transform 300ms ease-out;
+}
+
+button:hover,
+button:focus-visible {
+  transform: translateY(-12px) scale(1.08);
+}

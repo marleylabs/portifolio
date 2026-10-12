@@ -1,0 +1,94 @@
+.avatar {
+  width: clamp(13.75rem, 28vw, 20rem);
+  aspect-ratio: 1;
+}
+
+/* ---------- Respiração ---------- */
+
+.breathe {
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 100%;
+  animation: breathe 4.8s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1, 1) translateY(0);
+  }
+
+  50% {
+    /* Infla mais na vertical que na horizontal, como um peito enchendo de ar. */
+    transform: scale(1.015, 1.035) translateY(-1%);
+  }
+}
+
+/* ---------- Inclinação (useBoop) ---------- */
+
+.tilt {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 85%;
+}
+
+/* ---------- Imagens por tema ---------- */
+
+.frame {
+  position: absolute;
+  inset: 0;
+}
+
+.frame[data-variant="dark"] {
+  display: none;
+}
+
+:global(:root[data-theme="dark"]) .frame[data-variant="light"] {
+  display: none;
+}
+
+:global(:root[data-theme="dark"]) .frame[data-variant="dark"] {
+  display: block;
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme])) .frame[data-variant="light"] {
+    display: none;
+  }
+
+  :global(:root:not([data-theme])) .frame[data-variant="dark"] {
+    display: block;
+  }
+}
+
+.image {
+  object-fit: contain;
+}
+
+/* Piscada no PNG: o frame de olhos fechados aparece por cima, sem transição. */
+.blinkImage {
+  opacity: 0;
+}
+
+.avatar[data-blinking="true"] .blinkImage {
+  opacity: 1;
+}
+
+/* ---------- Mascote SVG ---------- */
+
+.mascot {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.eyes {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 60ms ease-in;
+}
+
+.avatar[data-blinking="true"] .eyes {
+  transform: scaleY(0.1);
+}

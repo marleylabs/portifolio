@@ -1,0 +1,153 @@
+.trigger {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .trigger {
+    display: inline-grid;
+  }
+}
+
+/* ---------- Drawer ---------- */
+/*
+ * A mola passa um pouco do destino (~10%). Para essa ultrapassagem não revelar um vão
+ * na borda direita, o drawer é --overshoot mais largo e fica parcialmente fora da tela.
+ */
+.drawer {
+  --overshoot: 3rem;
+  --panel-width: min(20rem, 85vw);
+
+  position: fixed;
+  inset: 0 0 0 auto;
+  width: calc(var(--panel-width) + var(--overshoot));
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0 calc(var(--overshoot) * -1) 0 0;
+  padding: 0 var(--overshoot) 0 0;
+  border: none;
+  border-left: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-md);
+  overscroll-behavior: contain;
+  transform: translateX(0);
+  transition:
+    var(--transition-colors),
+    transform var(--spring-duration) var(--ease-spring),
+    overlay var(--spring-duration) allow-discrete,
+    display var(--spring-duration) allow-discrete;
+}
+
+/* Fechando: saída rápida e sem quique — ninguém quer esperar um menu sumir. */
+.drawer:not([open]) {
+  transform: translateX(100%);
+  transition-duration: var(--duration-base);
+  transition-timing-function: var(--ease-out);
+}
+
+@starting-style {
+  .drawer[open] {
+    transform: translateX(100%);
+  }
+}
+
+.drawer::backdrop {
+  background: color-mix(in srgb, var(--color-text) 35%, transparent);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  opacity: 1;
+  transition:
+    opacity var(--duration-base) var(--ease-out),
+    overlay var(--duration-base) allow-discrete,
+    display var(--duration-base) allow-discrete;
+}
+
+.drawer:not([open])::backdrop {
+  opacity: 0;
+}
+
+@starting-style {
+  .drawer[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+/* ---------- Conteúdo ---------- */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: var(--space-4) var(--space-6) var(--space-8);
+  overflow-y: auto;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-6);
+}
+
+.heading {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.list {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Links entram em cascata, cada um com sua mola. */
+.item {
+  transition:
+    transform var(--spring-duration) var(--ease-spring),
+    opacity var(--duration-base) var(--ease-out);
+  transition-delay: calc(80ms + var(--i) * 50ms);
+}
+
+@starting-style {
+  .drawer[open] .item {
+    opacity: 0;
+    transform: translateX(2rem);
+  }
+}
+
+.link {
+  display: block;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-family: var(--font-heading);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  text-decoration: none;
+  transition: var(--transition-colors);
+}
+
+.link:hover {
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+}
+
+.link[aria-current="page"] {
+  color: var(--color-primary);
+}
+
+.preferences {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-border);
+  font-weight: 600;
+}

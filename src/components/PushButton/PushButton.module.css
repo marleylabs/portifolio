@@ -1,0 +1,91 @@
+/*
+ * Botão 3D em três camadas:
+ *   .shadow → sombra borrada no "chão"
+ *   .edge   → a lateral do botão (cor mais escura), parada
+ *   .front  → a face, levantada com translateY negativo
+ * Afundar = aproximar a face da borda e a sombra do botão.
+ */
+
+.pushable {
+  --face: var(--color-primary);
+  --text: var(--color-on-primary);
+  --edge: color-mix(in srgb, var(--color-primary) 62%, var(--color-depth));
+  --border: transparent;
+  --lift: 5px;
+
+  position: relative;
+  display: inline-block;
+  border-radius: var(--radius-full);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.pushable[data-variant="secondary"] {
+  --face: var(--color-surface);
+  --text: var(--color-text);
+  --edge: color-mix(in srgb, var(--color-border) 70%, var(--color-depth));
+  --border: var(--color-border);
+}
+
+.pushable:focus-visible {
+  outline-offset: 6px;
+}
+
+.shadow,
+.edge {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.shadow {
+  background: color-mix(in srgb, var(--color-depth) 22%, transparent);
+  filter: blur(4px);
+  transform: translateY(3px);
+  transition:
+    var(--transition-colors),
+    transform var(--spring-duration) var(--ease-spring);
+}
+
+.edge {
+  background: var(--edge);
+  transition: var(--transition-colors);
+}
+
+.front {
+  position: relative;
+  display: block;
+  padding: 0.8rem 1.9rem;
+  border: 2px solid var(--border);
+  border-radius: inherit;
+  background: var(--face);
+  color: var(--text);
+  font-weight: 700;
+  transform: translateY(calc(var(--lift) * -1));
+  transition:
+    var(--transition-colors),
+    transform var(--spring-duration) var(--ease-spring);
+}
+
+/* Hover: sobe mais, a sombra se afasta. */
+.pushable:hover .front {
+  transform: translateY(calc(var(--lift) * -1.5));
+}
+
+.pushable:hover .shadow {
+  transform: translateY(5px);
+}
+
+/* Pressionado: afunda na hora (sem mola) — a mola fica para a volta. */
+.pushable:active .front {
+  transform: translateY(-1px);
+  transition-duration: 40ms;
+  transition-timing-function: linear;
+}
+
+.pushable:active .shadow {
+  transform: translateY(1px);
+  transition-duration: 40ms;
+  transition-timing-function: linear;
+}

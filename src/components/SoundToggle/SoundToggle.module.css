@@ -1,0 +1,30 @@
+.waveSmall,
+.waveLarge,
+.mute {
+  transform-box: view-box;
+  transform-origin: 11px 12px;
+  transition:
+    transform var(--spring-duration) var(--ease-spring),
+    opacity var(--duration-fast) var(--ease-out);
+}
+
+.waveLarge {
+  transition-delay: 40ms;
+}
+
+.mute {
+  transform-origin: 18.5px 12px;
+  transform: scale(0) rotate(-45deg);
+  opacity: 0;
+}
+
+:global(:root[data-sound="off"]) .waveSmall,
+:global(:root[data-sound="off"]) .waveLarge {
+  transform: scale(0.4);
+  opacity: 0;
+}
+
+:global(:root[data-sound="off"]) .mute {
+  transform: scale(1) rotate(0deg);
+  opacity: 1;
+}

@@ -1,0 +1,74 @@
+.trigger {
+  anchor-name: var(--asterisk-anchor);
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.4em;
+  min-height: 1.4em;
+  margin: 0 0.05em;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-primary);
+  font-family: var(--font-heading);
+  font-size: 1.15em;
+  font-weight: 800;
+  line-height: 1;
+  vertical-align: 0.25em;
+  cursor: pointer;
+  transition:
+    var(--transition-colors),
+    transform var(--spring-duration) var(--ease-spring);
+}
+
+.trigger:hover {
+  background: var(--color-highlight);
+  transform: scale(1.15) rotate(15deg);
+}
+
+.note {
+  /* O UA centraliza popovers na tela (fallback); com anchor positioning, ancoramos. */
+  max-width: min(22rem, calc(100vw - 2rem));
+  margin: auto;
+  padding: var(--space-4) var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-lg);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity var(--duration-fast) var(--ease-out),
+    transform var(--spring-duration) var(--ease-spring),
+    overlay var(--duration-fast) allow-discrete,
+    display var(--duration-fast) allow-discrete;
+}
+
+.note:not(:popover-open) {
+  opacity: 0;
+  transform: translateY(-4px) scale(0.96);
+}
+
+@starting-style {
+  .note:popover-open {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.96);
+  }
+}
+
+@supports (position-anchor: --a) {
+  .note {
+    position-anchor: var(--asterisk-anchor);
+    inset: auto;
+    margin: 0.5rem 0 0;
+    top: anchor(bottom);
+    left: anchor(center);
+    translate: -50% 0;
+    /* Perto de uma borda da tela, troca de lado em vez de ser cortada. */
+    position-try-fallbacks: flip-block, flip-inline;
+    transform-origin: top center;
+  }
+}

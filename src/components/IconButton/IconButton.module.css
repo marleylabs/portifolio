@@ -1,0 +1,31 @@
+.button {
+  display: inline-grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  transition:
+    var(--transition-colors),
+    background-color var(--duration-fast) var(--ease-out);
+}
+
+.button:hover {
+  background: var(--color-surface-muted);
+}
+
+/* Wrapper do ícone que recebe o boop (transform precisa de um box não-inline). */
+.icon {
+  display: grid;
+  place-items: center;
+}
+
+.button svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  overflow: visible;
+}

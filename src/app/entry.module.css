@@ -1,0 +1,193 @@
+.container {
+  padding-inline: var(--gutter);
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: var(--space-4) var(--space-6);
+  margin: var(--space-8) 0 0;
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.facts dt {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+.facts dd {
+  margin: var(--space-1) 0 0;
+}
+
+.factWide {
+  grid-column: 1 / -1;
+}
+
+.facts dd ul {
+  margin-top: var(--space-1);
+}
+
+/* ---------- Estudo de caso ---------- */
+
+.projectLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}
+
+.projectLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-6);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-full);
+  color: var(--color-text);
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    var(--transition-colors),
+    transform var(--spring-duration) var(--ease-spring);
+}
+
+.projectLink:hover {
+  border-color: var(--color-text-muted);
+  color: var(--color-text);
+  transform: translateY(-2px);
+}
+
+.projectLinkIcon {
+  width: 1.1em;
+  height: 1.1em;
+}
+
+/* Capa larga entre o cabeçalho e o texto (é o LCP da página: carregada com priority). */
+.cover {
+  position: relative;
+  max-width: var(--wide-width);
+  aspect-ratio: 16 / 9;
+  margin: 0 auto var(--space-16);
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-muted);
+  box-shadow: var(--shadow-lg);
+}
+
+.cover img {
+  object-fit: cover;
+}
+
+/* Seções numeradas: 01 Problema, 02 Solução… (só os ## do texto, não os de componentes). */
+.caseStudy {
+  counter-reset: case-step;
+}
+
+.caseStudy > h2::before {
+  counter-increment: case-step;
+  content: counter(case-step, decimal-leading-zero);
+  display: block;
+  margin-bottom: var(--space-2);
+  color: var(--color-primary);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+/* ---------- Corpo do artigo + sumário lateral ---------- */
+
+.body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.content {
+  width: 100%;
+}
+
+.aside {
+  display: none;
+}
+
+/*
+ * Telas largas: texto centralizado na coluna do meio, sumário na sobra da direita.
+ * O <aside> estica até o fim do artigo (stretch do grid), então o sumário fica grudado
+ * durante toda a leitura e só sobe — por baixo do HeaderBlocker — quando o texto acaba.
+ */
+@media (min-width: 80rem) {
+  .body {
+    grid-template-columns: 1fr min(var(--content-width), 100%) 1fr;
+    column-gap: var(--space-12);
+  }
+
+  .content {
+    grid-column: 2;
+  }
+
+  .aside {
+    display: block;
+    grid-column: 3;
+    grid-row: 1;
+    max-width: 15rem;
+  }
+}
+
+.footer {
+  max-width: var(--content-width);
+  margin: var(--space-16) auto 0;
+  padding-top: var(--space-8);
+  border-top: 1px solid var(--color-border);
+  font-weight: 700;
+}
+
+.categoryLink {
+  color: inherit;
+  text-decoration-thickness: 0.1em;
+}
+
+.articleMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-6);
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  list-style: none;
+}
+
+.articleMeta li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.articleMeta time {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.articleMeta svg {
+  width: 1.1em;
+  height: 1.1em;
+}
+
+.footerLinks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.updated {
+  margin: 0 0 var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-weight: 400;
+}

@@ -1,0 +1,19 @@
+.result {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+}
+
+.result p {
+  margin: 0;
+}
+
+.result[data-status="success"] {
+  background: var(--color-success-bg);
+}
+
+.result[data-status="error"] {
+  background: var(--color-danger-bg);
+}

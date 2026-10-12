@@ -1,0 +1,73 @@
+import { connection, type NextRequest } from "next/server";
+import { z } from "zod";
+import { getAllArticles, getAllProjects } from "@/lib/content";
+import { MAX_LIKES_PER_VISITOR, getLikesStore, type LikeState } from "@/lib/likes";
+import { rateLimit } from "@/lib/rate-limit";
+import { NotConfiguredError, clientIp, hashVisitor } from "@/lib/visitor";
+
+/*
+ * GET  /api/likes?id=article:css/molas-em-css  → { total, mine, max }
+ * POST /api/likes  { id, count }                → { total, mine, max }
+ *
+ * `count` permite agrupar vários cliques num envio (o botão espera uma pausa).
+ * As páginas continuam estáticas: só esta rota roda por requisição.
+ */
+
+const NO_STORE = { "Cache-Control": "no-store" };
+
+/** Ids aceitos: só conteúdos que existem e têm página aqui (nada de chaves arbitrárias). */
+async function likeableIds() {
+  const [articles, projects] = await Promise.all([getAllArticles(), getAllProjects()]);
+  return new Set([
+    ...articles.filter((a) => !a.isExternal).map((a) => `article:${a.id}`),
+    ...projects.filter((p) => !p.isExternal).map((p) => `project:${p.id}`),
+  ]);
+}
+
+function reply(state: LikeState, status = 200) {
+  return Response.json({ ...state, max: MAX_LIKES_PER_VISITOR }, { status, headers: NO_STORE });
+}
+
+function error(message: string, status: number) {
+  return Response.json({ error: message }, { status, headers: NO_STORE });
+}
+
+async function handle(request: NextRequest, id: unknown, count: number | null) {
+  if (typeof id !== "string" || !(await likeableIds()).has(id)) return error("Conteúdo não encontrado.", 404);
+
+  try {
+    const store = getLikesStore();
+    const visitor = hashVisitor(clientIp(request.headers));
+    if (!(await rateLimit("likes", visitor, 30, 60))) return error("Muitas requisições. Tente de novo em um minuto.", 429);
+    return reply(count === null ? await store.read(id, visitor) : await store.add(id, visitor, count));
+  } catch (cause) {
+    if (cause instanceof NotConfiguredError) {
+      // Desativado por configuração é um estado, não uma falha: 200 + available:false
+      // (um 503 sujaria o console de todo visitante).
+      console.warn(`[likes] desativado: ${cause.message}`);
+      return Response.json({ available: false }, { headers: NO_STORE });
+    }
+    console.error("[likes] falha no armazenamento", cause);
+    return error("Não foi possível registrar agora.", 502);
+  }
+}
+
+export async function GET(request: NextRequest) {
+  await connection(); // sempre por requisição, nunca pré-renderizado
+  return handle(request, request.nextUrl.searchParams.get("id"), null);
+}
+
+const postSchema = z.object({
+  id: z.string(),
+  count: z.number().int().min(1).max(MAX_LIKES_PER_VISITOR),
+});
+
+export async function POST(request: NextRequest) {
+  await connection();
+  // Exigir JSON força o preflight de CORS em pedidos de outros sites (que não liberamos).
+  if (!request.headers.get("content-type")?.includes("application/json")) return error("Envie JSON.", 415);
+
+  const body = postSchema.safeParse(await request.json().catch(() => null));
+  if (!body.success) return error("Pedido inválido.", 400);
+  return handle(request, body.data.id, body.data.count);
+}

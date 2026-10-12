@@ -1,0 +1,48 @@
+.sidenote {
+  --sidenote-bg: var(--color-info-bg);
+  --sidenote-border: var(--color-info-border);
+
+  position: relative;
+  margin-block: var(--space-8);
+  /* Sangra um pouco para fora da coluna de texto em telas largas. */
+  margin-inline: calc(var(--space-6) * -1);
+  padding: var(--space-6);
+  padding-left: calc(var(--space-6) + var(--space-8));
+  border-left: 4px solid var(--sidenote-border);
+  border-radius: var(--radius-sm) var(--radius-md) var(--radius-md) var(--radius-sm);
+  background: var(--sidenote-bg);
+}
+
+.sidenote[data-type="warning"] {
+  --sidenote-bg: var(--color-warning-bg);
+  --sidenote-border: var(--color-warning-border);
+}
+
+.sidenote[data-type="success"] {
+  --sidenote-bg: var(--color-success-bg);
+  --sidenote-border: var(--color-success-border);
+}
+
+.icon {
+  position: absolute;
+  top: calc(var(--space-6) + 0.2em);
+  left: var(--space-4);
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--sidenote-border);
+}
+
+.content > :first-child {
+  margin-top: 0;
+}
+
+.content > :last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 720px) {
+  .sidenote {
+    margin-inline: calc(var(--gutter) * -1);
+    border-radius: 0;
+  }
+}
