@@ -114,6 +114,18 @@
   color: var(--color-text);
 }
 
+/* Celulares bem estreitos (~320px): fonte e espaço menores para o nome caber inteiro.
+   A reticência continua como rede de segurança (ex.: zoom de texto alto). */
+@media (max-width: 22.5rem) {
+  .inner {
+    gap: var(--space-2);
+  }
+
+  .logo {
+    font-size: 0.9375rem;
+  }
+}
+
 /* inline (não inline-flex): assim a reticência corta letra a letra, não a palavra inteira. */
 .logoWord {
   display: inline;
