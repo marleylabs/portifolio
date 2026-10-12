@@ -355,8 +355,8 @@ export async function getPopular({ limit = 3 }: { limit?: number } = {}): Promis
 
 /*
  * content/pages/sobre.mdx: o corpo é o texto pessoal; o frontmatter guarda foto,
- * linha do tempo e stack. Itens com `example: true` aparecem com um selo "exemplo"
- * na página — um lembrete visível para trocar por dados reais antes de publicar.
+ * linha do tempo e stack. Na stack, itens com `example: true` aparecem com um selo
+ * "exemplo"; na linha do tempo, ficam fora da página (a seção some se só houver exemplos).
  */
 const aboutSchema = z
   .object({

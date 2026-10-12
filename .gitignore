@@ -42,3 +42,9 @@ next-env.d.ts
 
 # exemplo de variáveis (sem segredos) vai para o repositório
 !.env.example
+
+# link local para as skills do Claude Code
+/skills
+
+# relatórios do Lighthouse (linha de base e comparações)
+/.lighthouse/
