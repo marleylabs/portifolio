@@ -73,5 +73,9 @@ e a região de aviso recebe o texto), não a fala de um leitor de tela.
 ### Pausa das animações
 - [ ] Pause pelo header, recarregue a página: tudo continua parado desde o primeiro
       quadro (sem as ondas "andarem" um instante antes de parar).
-- [ ] Num aparelho com "Reduzir movimento" ligado no sistema e sem preferência salva, o
-      botão já aparece como pausado.
+- [ ] Num aparelho com "Reduzir movimento" ligado no sistema (iOS: Ajustes → Acessibilidade
+      → Movimento; Android: Remover animações; macOS/Windows: nas opções de acessibilidade),
+      o botão aparece pausado (▶) e não muda ao tocar. No desktop, ao passar o mouse ou
+      focar, aparece "Animações reduzidas pelas configurações do seu sistema"; no menu do
+      celular, essa frase fica escrita abaixo de "Animações". O leitor de tela lê o botão
+      como pressionado e indisponível, com a frase como descrição.

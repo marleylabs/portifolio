@@ -46,6 +46,8 @@ const permissionsPolicy = [
 const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: true,
+  // Sem "X-Powered-By: Next.js": não há por que anunciar a tecnologia do site.
+  poweredByHeader: false,
   partialPrefetching: true,
   experimental: {
     // CSS em <style> no HTML em vez de <link>: tira ~600ms de CSS bloqueante do LCP

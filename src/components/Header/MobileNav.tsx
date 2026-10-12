@@ -6,7 +6,7 @@ import { useEffect, useId, useRef, useState, type CSSProperties, type MouseEvent
 import iconButton from "@/components/IconButton/IconButton.module.css";
 import { useBoop } from "@/hooks/use-boop";
 import { useSoundEffect } from "@/components/Providers/SoundProvider";
-import { MotionToggle } from "@/components/MotionToggle/MotionToggle";
+import { MotionToggle, SYSTEM_REDUCED_HINT } from "@/components/MotionToggle/MotionToggle";
 import { SoundToggle } from "@/components/SoundToggle/SoundToggle";
 import { navigation } from "@/lib/site";
 import { isCurrentPath } from "./NavLinks";
@@ -130,6 +130,10 @@ export function MobileNav() {
               <span>Animações</span>
               <MotionToggle />
             </div>
+            {/* Visível só com "reduzir movimento" no sistema (media query no CSS). */}
+            <p className={styles.preferenceNote} aria-hidden="true">
+              {SYSTEM_REDUCED_HINT}
+            </p>
           </div>
         </div>
       </dialog>

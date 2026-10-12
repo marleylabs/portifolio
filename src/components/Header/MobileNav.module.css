@@ -156,3 +156,22 @@
   align-items: center;
   justify-content: space-between;
 }
+
+/* No menu a dica fica escrita (sem hover no toque); o balão do botão sai. */
+.preference [role="tooltip"] {
+  display: none;
+}
+
+.preferenceNote {
+  display: none;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-weight: 400;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .preferenceNote {
+    display: block;
+  }
+}
