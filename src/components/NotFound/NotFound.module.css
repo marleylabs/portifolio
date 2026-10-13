@@ -61,11 +61,6 @@
   }
 }
 
-/* As pupilas seguem o cursor com uma leve inércia. */
-.pupils {
-  transition: transform 180ms var(--ease-out);
-}
-
 .eyes {
   transform-box: fill-box;
   transform-origin: center;
@@ -74,4 +69,13 @@
 
 .art[data-blinking="true"] .eyes {
   transform: scaleY(0.12);
+}
+
+/* O reflexo some junto quando o olho fecha. */
+.glint {
+  transition: opacity var(--duration-press) ease-in;
+}
+
+.art[data-blinking="true"] .glint {
+  opacity: 0;
 }

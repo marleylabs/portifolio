@@ -1,5 +1,7 @@
 import { Avatar } from "@/components/Avatar/Avatar";
 import { PushButton } from "@/components/PushButton/PushButton";
+import { CosmosLayer } from "@/components/Cosmos/CosmosLayer";
+import { SolarSystem } from "@/components/SolarSystem/SolarSystem";
 import { Sparkles } from "@/components/Sparkles/Sparkles";
 import { hero } from "@/lib/site";
 import { HeroWaves } from "./HeroWaves";
@@ -10,6 +12,7 @@ export function Hero() {
 
   return (
     <section className={styles.hero} aria-labelledby="hero-title">
+      <CosmosLayer variant="hero" />
       <div className={styles.inner}>
         <div className={styles.text}>
           <h1 id="hero-title" className={styles.title}>
@@ -31,7 +34,9 @@ export function Hero() {
         </div>
 
         <div className={styles.visual}>
-          <Avatar alt={hero.avatarAlt} />
+          <SolarSystem>
+            <Avatar alt={hero.avatarAlt} />
+          </SolarSystem>
         </div>
       </div>
 

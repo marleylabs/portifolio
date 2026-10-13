@@ -12,9 +12,10 @@ const LABEL = "Pausar animações";
 export const SYSTEM_REDUCED_HINT = "Animações reduzidas pelas configurações do seu sistema";
 
 /**
- * Pausa as animações que rodam sozinhas: ondas do topo, respiração e piscadas do avatar,
- * estrelinhas e a página 404 (WCAG 2.2.2). As que respondem a um gesto (boop, mola dos
- * botões) continuam. A preferência fica salva, como o tema e o som.
+ * Pausa as animações que rodam sozinhas: órbitas dos planetas, respiração e coroa do
+ * mascote, piscadas, estrelinhas e a página 404 (WCAG 2.2.2). As que respondem a um gesto
+ * (boop, mola dos botões, olhos que seguem o cursor) continuam. A preferência fica salva,
+ * como o tema e o som.
  *
  * Botão de alternância: o rótulo é fixo e o estado vai em aria-pressed, que os leitores
  * de tela anunciam ao alternar ("pressionado" / "não pressionado").

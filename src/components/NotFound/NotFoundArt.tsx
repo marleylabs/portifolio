@@ -2,49 +2,22 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAmbientMotionPaused } from "@/hooks/use-preferences";
-import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
+import { useEyeTracking } from "@/hooks/use-eye-tracking";
 import { useRandomInterval } from "@/hooks/use-random-interval";
 import styles from "./NotFound.module.css";
 
 const MAX_LOOK = 5; // quanto as pupilas andam (unidades do viewBox)
 
 /**
- * "404" em que o 0 é o mascote, perdido e de boca aberta. Os olhos seguem o cursor
- * (escrevendo direto no DOM, no máximo uma vez por frame — sem re-render) e piscam de
- * vez em quando. Os "4" balançam devagar. Movimento reduzido: tudo parado.
+ * "404" em que o 0 é um planeta que escapou da órbita, de boca aberta. Os olhos seguem o
+ * cursor (useEyeTracking) e piscam de vez em quando. Os "4" balançam devagar.
  */
 export function NotFoundArt() {
-  const prefersReducedMotion = usePrefersReducedMotion();
   const faceRef = useRef<SVGSVGElement>(null);
-  const pupilsRef = useRef<SVGGElement>(null);
   const [isBlinking, setIsBlinking] = useState(false);
 
-  useEffect(() => {
-    if (prefersReducedMotion) return;
-    let frame = 0;
-    let pointer = { x: 0, y: 0 };
-
-    const update = () => {
-      frame = 0;
-      const face = faceRef.current?.getBoundingClientRect();
-      if (!face || !pupilsRef.current) return;
-      const dx = pointer.x - (face.left + face.width / 2);
-      const dy = pointer.y - (face.top + face.height / 2);
-      const distance = Math.hypot(dx, dy) || 1;
-      const reach = Math.min(1, distance / 300) * MAX_LOOK;
-      pupilsRef.current.style.transform = `translate(${(dx / distance) * reach}px, ${(dy / distance) * reach}px)`;
-    };
-
-    const onMove = (event: PointerEvent) => {
-      pointer = { x: event.clientX, y: event.clientY };
-      if (!frame) frame = requestAnimationFrame(update);
-    };
-    window.addEventListener("pointermove", onMove, { passive: true });
-    return () => {
-      window.removeEventListener("pointermove", onMove);
-      cancelAnimationFrame(frame);
-    };
-  }, [prefersReducedMotion]);
+  // Olhos que seguem o cursor (mesmo hook do mascote do hero).
+  useEyeTracking(faceRef, { maxLook: MAX_LOOK });
 
   const blink = useCallback(() => setIsBlinking(true), []);
   const ambientPaused = useAmbientMotionPaused();
@@ -58,27 +31,48 @@ export function NotFoundArt() {
   return (
     <div className={styles.art} aria-hidden="true" data-blinking={isBlinking}>
       <span className={styles.digit}>4</span>
+      {/* O "0" é um planeta que escapou da órbita: o trecho de órbita tracejada fica para
+          trás (com a falha por onde ele saiu), riscos de velocidade e cara de "ué". */}
       <svg ref={faceRef} className={styles.face} viewBox="0 0 120 120">
         <defs>
-          <linearGradient id="nf-skin" x1="0.15" y1="0" x2="0.85" y2="1">
-            <stop offset="0%" style={{ stopColor: "var(--color-sparkle)" }} />
-            <stop offset="55%" style={{ stopColor: "var(--color-primary)" }} />
-            <stop offset="100%" style={{ stopColor: "var(--color-accent)" }} />
-          </linearGradient>
+          <radialGradient id="nf-planet" cx="0.32" cy="0.28" r="0.85">
+            <stop offset="0%" stopColor="#efe2ff" />
+            <stop offset="45%" style={{ stopColor: "var(--color-accent)" }} />
+            <stop offset="100%" stopColor="#3f1c8f" />
+          </radialGradient>
         </defs>
-        <circle cx="60" cy="60" r="54" fill="url(#nf-skin)" />
-        <ellipse cx="40" cy="36" rx="11" ry="6" transform="rotate(-30 40 36)" style={{ fill: "var(--color-mascot-shine)" }} opacity="0.35" />
-        {/* Olhos: brancos fixos, pupilas móveis */}
-        <g className={styles.eyes}>
+
+        {/* Órbita de onde ele escapou (fica embaixo, à esquerda) e os riscos da fuga. */}
+        <g className={styles.escape} fill="none" strokeLinecap="round">
+          <path d="M-46 128c18-20 52-30 84-28m26 4c22 6 38 16 46 28" strokeWidth="2" strokeDasharray="2 7" style={{ stroke: "var(--color-accent)" }} opacity="0.55" />
+          <path d="M-8 118q8-14 22-22M4 126q10-14 26-20M18 132q12-12 26-16" strokeWidth="3" style={{ stroke: "var(--color-primary)" }} opacity="0.45" />
+        </g>
+
+        {/* Anel: metade de trás antes da esfera, metade da frente depois. */}
+        <ellipse cx="60" cy="64" rx="78" ry="16" transform="rotate(-14 60 64)" fill="none" strokeWidth="5" style={{ stroke: "var(--color-sparkle)" }} opacity="0.55" />
+        <circle cx="60" cy="60" r="54" fill="url(#nf-planet)" />
+        <path d="M-15 82a78 16 -14 0 0 151-37" fill="none" strokeWidth="5" strokeLinecap="round" style={{ stroke: "var(--color-sparkle)" }} opacity="0.9" />
+        <ellipse cx="38" cy="30" rx="13" ry="7" transform="rotate(-30 38 30)" fill="#fff" opacity="0.35" />
+
+        {/* Olhos: brancos fixos, pupilas móveis (seguem o cursor). */}
+        <g className={styles.eyes} data-gaze-origin>
           <circle cx="43" cy="54" r="12" style={{ fill: "var(--color-mascot-shine)" }} />
           <circle cx="77" cy="54" r="12" style={{ fill: "var(--color-mascot-shine)" }} />
-          <g ref={pupilsRef} className={styles.pupils}>
+          <g data-gaze>
             <circle cx="43" cy="54" r="5.5" style={{ fill: "var(--color-mascot-ink)" }} />
             <circle cx="77" cy="54" r="5.5" style={{ fill: "var(--color-mascot-ink)" }} />
+            {/* Reflexos: no mesmo grupo das pupilas, andam junto e ficam dentro da parte escura. */}
+            <circle className={styles.glint} cx="45" cy="52" r="1.8" fill="#fff" />
+            <circle className={styles.glint} cx="79" cy="52" r="1.8" fill="#fff" />
           </g>
         </g>
-        {/* Boca de "ué?" */}
-        <ellipse cx="60" cy="88" rx="7" ry="9" style={{ fill: "var(--color-mascot-ink)" }} />
+        {/* Sobrancelhas preocupadas, boca de "ué?" e uma gota de suor. */}
+        <g style={{ fill: "var(--color-mascot-ink)" }}>
+          <path d="M31 37c5-5 13-6 20-3 2 1 1 4-1 4-6-1-12 0-17 2-2 1-4-1-2-3Z" />
+          <path d="M89 37c-5-5-13-6-20-3-2 1-1 4 1 4 6-1 12 0 17 2 2 1 4-1 2-3Z" />
+          <ellipse cx="60" cy="88" rx="7" ry="9" />
+        </g>
+        <path d="M98 30c3 5 5 8 5 11a5 5 0 0 1-10 0c0-3 2-6 5-11Z" fill="#bfe3ff" opacity="0.9" />
       </svg>
       <span className={styles.digit}>4</span>
     </div>

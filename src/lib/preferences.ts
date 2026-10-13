@@ -10,7 +10,7 @@ import { prefersReducedMotion } from "./reduced-motion";
 
 export type Theme = "light" | "dark";
 export type SoundSetting = "on" | "off";
-/** "paused": animações contínuas (ondas, respiração, estrelinhas, piscadas) param. */
+/** "paused": animações contínuas (órbitas, respiração, estrelinhas, piscadas) param. */
 export type MotionSetting = "on" | "paused";
 
 export const THEME_KEY = "theme";

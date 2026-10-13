@@ -72,7 +72,7 @@ e a região de aviso recebe o texto), não a fala de um leitor de tela.
 
 ### Pausa das animações
 - [ ] Pause pelo header, recarregue a página: tudo continua parado desde o primeiro
-      quadro (sem as ondas "andarem" um instante antes de parar).
+      quadro (sem os planetas "andarem" um instante antes de parar).
 - [ ] Num aparelho com "Reduzir movimento" ligado no sistema (iOS: Ajustes → Acessibilidade
       → Movimento; Android: Remover animações; macOS/Windows: nas opções de acessibilidade),
       o botão aparece pausado (▶) e não muda ao tocar. No desktop, ao passar o mouse ou
@@ -104,3 +104,16 @@ Os números que contam são os de visitantes de verdade.
       encolhem. Num navegador sem suporte, o filtro troca na hora, sem erro.
 - [ ] Com "Pausar animações" ligado (ou "reduzir movimento" no sistema), o filtro troca
       sem animação.
+
+## Lote 5 — sistema solar e olhos do mascote
+
+- [ ] **Celular de verdade (iOS e Android):** toque perto do mascote — os olhos olham para
+      o ponto tocado por ~1 s e voltam ao centro. Rolar a página não deve fazer os olhos
+      "seguirem" o dedo.
+- [ ] **Teclado (Safari, Firefox, Chrome):** Tab até os planetas — cada um mostra o rótulo,
+      as órbitas param e o mascote olha para o planeta em foco. Um planeta que estava atrás
+      do sol dá meia volta e aparece embaixo dele, nunca sobre o rosto.
+- [ ] **Leitor de tela:** a lista "Áreas do meu trabalho" tem 5 links (3 no celular), com
+      nomes como "Frontend: React e Next.js. Ver projetos".
+- [ ] **Filtro por área:** cada planeta abre /projetos com o chip da área; uma área sem
+      projetos mostra "Ainda não publiquei projetos de … por aqui."

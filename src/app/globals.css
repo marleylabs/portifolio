@@ -21,6 +21,8 @@ html {
 body {
   margin: 0;
   min-height: 100dvh;
+  /* Corta o que passar da largura da janela (o céu da 404) sem criar barra de rolagem. */
+  overflow-x: clip;
   display: flex;
   flex-direction: column;
   background: var(--color-bg);

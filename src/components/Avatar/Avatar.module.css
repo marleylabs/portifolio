@@ -81,6 +81,17 @@
 }
 
 /* ---------- Mascote SVG ---------- */
+/*
+ * Tudo o que se mexe sozinho (respiração, sombra, órbita, balanço do topete) para com
+ * "Pausar animações" e com o "reduzir movimento" do sistema (regra global em globals.css).
+ * Expressões e squash respondem a gestos (hover/clique); com movimento reduzido, a
+ * expressão muda na hora, sem squash.
+ */
+
+/* O mascote respira por dentro (corpo e sombra em sincronia); o wrapper não precisa. */
+.breathe:has(.mascot) {
+  animation: none;
+}
 
 .mascot {
   width: 100%;
@@ -88,12 +99,191 @@
   overflow: visible;
 }
 
-.eyes {
+.body,
+.shadow,
+.corona,
+.tuft,
+.eyes,
+.browL,
+.browR,
+.surprise {
   transform-box: fill-box;
+}
+
+/* Respiração: sobe e infla um pouco; a sombra encolhe e clareia no mesmo ritmo. */
+.body {
+  transform-origin: 50% 100%;
+  animation: mascot-breathe 4.8s ease-in-out infinite;
+}
+
+.shadow {
+  transform-origin: center;
+  animation: mascot-shadow 4.8s ease-in-out infinite;
+}
+
+@keyframes mascot-breathe {
+  0%,
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+
+  50% {
+    transform: translateY(-5px) scale(1.012, 1.028);
+  }
+}
+
+@keyframes mascot-shadow {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(0.84);
+    opacity: 0.65;
+  }
+}
+
+/* Coroa do sol: cresce e acende quando ele "inspira" (mesmo ritmo da respiração). */
+.corona {
+  transform-origin: center;
+  animation: mascot-corona 4.8s ease-in-out infinite;
+}
+
+@keyframes mascot-corona {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(1.07);
+    opacity: 1;
+  }
+}
+
+/* Topete: responde aos gestos com a mola do site. Sem balanço automático: o sistema
+   solar já traz movimento suficiente ao hero. */
+.tuft {
+  transform-origin: 20% 100%;
+  transition: transform var(--spring-duration) var(--ease-spring);
+}
+
+:global(:root[data-motion="paused"]) .body,
+:global(:root[data-motion="paused"]) .shadow,
+:global(:root[data-motion="paused"]) .corona {
+  animation-play-state: paused;
+}
+
+/* ---------- Expressões ---------- */
+
+.browL,
+.browR {
+  transform-origin: center;
+  transition: transform var(--spring-duration) var(--ease-spring);
+}
+
+.eyes {
   transform-origin: center;
   transition: transform var(--duration-press) ease-in;
 }
 
+.smirk,
+.surprise {
+  opacity: 0;
+}
+
+.smile,
+.smirk,
+.surprise {
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+/* Hover: a expressão determinada da referência (sobrancelhas para dentro, sorriso de canto). */
+.avatar:hover .browL {
+  transform: translate(3px, 2px) rotate(22deg);
+}
+
+.avatar:hover .browR {
+  transform: translate(-3px, 2px) rotate(-22deg);
+}
+
+.avatar:hover .smile {
+  opacity: 0;
+}
+
+.avatar:hover .smirk {
+  opacity: 1;
+}
+
+.avatar:hover .tuft {
+  transform: rotate(-12deg);
+}
+
+/* Clique: surpresa rápida, com squash and stretch no corpo inteiro. */
+.avatar[data-surprised="true"] .body {
+  animation: mascot-squash 600ms var(--ease-out);
+}
+
+.avatar[data-surprised="true"] .browL {
+  transform: translate(0, -9px) rotate(-8deg);
+}
+
+.avatar[data-surprised="true"] .browR {
+  transform: translate(0, -9px) rotate(8deg);
+}
+
+.avatar[data-surprised="true"] .eyes {
+  transform: scale(1.12);
+}
+
+.avatar[data-surprised="true"] .smile,
+.avatar[data-surprised="true"] .smirk {
+  opacity: 0;
+}
+
+.avatar[data-surprised="true"] .surprise {
+  opacity: 1;
+}
+
+.avatar[data-surprised="true"] .tuft {
+  transform: translateY(-6px) rotate(18deg);
+}
+
+@keyframes mascot-squash {
+  0% {
+    transform: scale(1, 1);
+  }
+
+  18% {
+    transform: translateY(2px) scale(1.14, 0.84);
+  }
+
+  45% {
+    transform: translateY(-14px) scale(0.9, 1.12);
+  }
+
+  70% {
+    transform: translateY(0) scale(1.05, 0.96);
+  }
+
+  100% {
+    transform: none;
+  }
+}
+
+/* Piscada (vem por último: vence as outras expressões dos olhos). O reflexo some junto:
+   achatado, sobraria como um fiozinho branco no olho fechado. */
 .avatar[data-blinking="true"] .eyes {
   transform: scaleY(0.1);
+}
+
+.glint {
+  transition: opacity var(--duration-press) ease-in;
+}
+
+.avatar[data-blinking="true"] .glint {
+  opacity: 0;
 }
