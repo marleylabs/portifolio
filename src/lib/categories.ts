@@ -33,6 +33,22 @@ export const PROJECT_CATEGORIES = {
   experimento: { label: "Experimento" },
 } as const satisfies Record<string, { label: string }>;
 
+/*
+ * Áreas do trabalho (os planetas do hero). Um projeto pode ter mais de uma; /projetos
+ * filtra por ?area=. `noun` completa a frase do estado vazio: "projetos de {noun}".
+ */
+export const PROJECT_AREAS = {
+  frontend: { label: "Frontend", noun: "frontend" },
+  backend: { label: "Backend", noun: "backend" },
+  dados: { label: "Banco de dados", noun: "banco de dados" },
+  ia: { label: "IA e vibe coding", noun: "IA" },
+  devops: { label: "DevOps e cloud", noun: "DevOps e cloud" },
+} as const satisfies Record<string, { label: string; noun: string }>;
+
+export type ProjectArea = keyof typeof PROJECT_AREAS;
+export const PROJECT_AREA_KEYS = Object.keys(PROJECT_AREAS) as [ProjectArea, ...ProjectArea[]];
+export const isProjectArea = (value: string | null): value is ProjectArea => value !== null && value in PROJECT_AREAS;
+
 export type ArticleCategory = keyof typeof ARTICLE_CATEGORIES;
 export type ProjectCategory = keyof typeof PROJECT_CATEGORIES;
 

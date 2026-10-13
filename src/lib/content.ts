@@ -8,14 +8,7 @@ import yaml from "js-yaml";
 import { cacheLife } from "next/cache";
 import readingTime from "reading-time";
 import { z } from "zod";
-import {
-  ARTICLE_CATEGORIES,
-  ARTICLE_CATEGORY_KEYS,
-  PROJECT_CATEGORY_KEYS,
-  RESERVED_SEGMENTS,
-  isArticleCategory,
-  type ArticleCategory,
-} from "./categories";
+import { ARTICLE_CATEGORIES, ARTICLE_CATEGORY_KEYS, PROJECT_AREA_KEYS, PROJECT_CATEGORY_KEYS, RESERVED_SEGMENTS, isArticleCategory, type ArticleCategory } from "./categories";
 import { HIGHLIGHTS } from "./highlights";
 
 /*
@@ -106,6 +99,8 @@ const projectSchema = z
     /** Projetos sempre têm capa: é ela que sustenta os cards. */
     cover: coverField,
     stack: z.array(z.string().trim().min(1)).min(1, "liste ao menos uma tecnologia"),
+    /** Áreas do trabalho (os planetas do hero): frontend, backend, dados, ia, devops. */
+    area: z.array(z.enum(PROJECT_AREA_KEYS)).default([]),
     featured: z.boolean().default(false),
     /** Opcional: seu papel no projeto ("Fullstack", "Front-end e design"…). */
     role: z.string().trim().min(1).optional(),

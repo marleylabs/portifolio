@@ -6,12 +6,14 @@ import { ProjectCard } from "@/components/ProjectCard/ProjectCard";
 import { pillStyle } from "@/components/StackPill/StackPill";
 import { useSoundEffect } from "@/components/Providers/SoundProvider";
 import { useAmbientMotionPaused } from "@/hooks/use-preferences";
+import { PROJECT_AREAS, isProjectArea, type ProjectArea } from "@/lib/categories";
 import type { ProjectSummary } from "@/lib/content";
 import styles from "./ProjectExplorer.module.css";
 
 type Technology = { name: string; count: number };
 
 const PARAM = "stack";
+const AREA_PARAM = "area";
 // Capas da primeira linha: carregam já, com prioridade (são o maior elemento da tela).
 const EAGER_COVERS = 2;
 /*
@@ -22,10 +24,12 @@ const FILTER = "filtro-projetos";
 const onFilter = (className: string) => ({ [FILTER]: className, default: "none" });
 
 /**
- * Grid de projetos com filtro por tecnologia.
+ * Grid de projetos com filtro por tecnologia e por área.
  *
- * - O filtro vive na URL (?stack=React): dá para compartilhar o link. A troca usa
- *   history.replaceState, sem ir ao servidor.
+ * - Os filtros vivem na URL (?stack=React, ?area=frontend): dá para compartilhar o link.
+ *   A troca usa history.replaceState, sem ir ao servidor. A área vem dos planetas do hero
+ *   e aparece como um chip removível; os dois filtros se somam.
+ * - Área sem nenhum projeto: um estado vazio amigável, em vez de lista vazia.
  * - Animação nativa (View Transitions, via <ViewTransition> do React): cada card desliza
  *   da posição antiga para a nova com a mola do site (--ease-spring, em globals.css); os
  *   que entram crescem, os que saem encolhem. Zero JS de animação no bundle.
@@ -42,34 +46,78 @@ export function ProjectExplorer({ projects, technologies }: { projects: ProjectS
     const requested = searchParams.get(PARAM);
     return isValid(requested) ? requested : null;
   });
-  const visible = selected ? projects.filter(({ stack }) => stack.includes(selected)) : projects;
+  const [area, setArea] = useState<ProjectArea | null>(() => {
+    const requested = searchParams.get(AREA_PARAM);
+    return isProjectArea(requested) ? requested : null;
+  });
+  const areaInfo = area ? PROJECT_AREAS[area] : null;
+  const inArea = area ? projects.filter((project) => project.area.includes(area)) : projects;
+  const visible = selected ? inArea.filter(({ stack }) => stack.includes(selected)) : inArea;
 
-  function select(tech: string | null) {
+  // Atualiza a URL e o estado (dentro de uma view transition, se as animações estiverem ligadas).
+  function update(params: Record<string, string | null>, apply: () => void) {
     const url = new URL(window.location.href);
-    if (tech) url.searchParams.set(PARAM, tech);
-    else url.searchParams.delete(PARAM);
+    for (const [param, value] of Object.entries(params)) {
+      if (value) url.searchParams.set(param, value);
+      else url.searchParams.delete(param);
+    }
     window.history.replaceState(null, "", url);
     playSound("tick");
 
     if (paused) {
-      setSelected(tech);
+      apply();
       return;
     }
     startTransition(() => {
       addTransitionType(FILTER);
-      setSelected(tech);
+      apply();
     });
   }
+
+  const select = (tech: string | null) => update({ [PARAM]: tech }, () => setSelected(tech));
+  const clearArea = () => update({ [AREA_PARAM]: null }, () => setArea(null));
+  const clearAll = () =>
+    update({ [PARAM]: null, [AREA_PARAM]: null }, () => {
+      setSelected(null);
+      setArea(null);
+    });
+  // Área que existe, mas ainda sem nenhum projeto publicado.
+  const areaIsEmpty = areaInfo !== null && inArea.length === 0;
+
 
   return (
     <>
       <FilterBar technologies={technologies} selected={selected} onSelect={select} total={projects.length} />
 
+      {areaInfo && (
+        <p className={styles.areaChip}>
+          <span>
+            Área: <strong>{areaInfo.label}</strong>
+          </span>
+          <button type="button" className={styles.areaClear} onClick={clearArea} aria-label={`Remover filtro de área: ${areaInfo.label}`}>
+            ✕
+          </button>
+        </p>
+      )}
+
       <p className="visually-hidden" role="status">
-        {selected
-          ? `${visible.length} ${visible.length === 1 ? "projeto" : "projetos"} com ${selected}`
-          : `Mostrando todos os ${projects.length} projetos`}
+        {visible.length === 0
+          ? "Nenhum projeto com esses filtros"
+          : `${visible.length} ${visible.length === 1 ? "projeto" : "projetos"}${areaInfo ? ` de ${areaInfo.noun}` : ""}${selected ? ` com ${selected}` : ""}`}
       </p>
+
+      {visible.length === 0 && (
+        <div className={styles.empty}>
+          <p>
+            {areaIsEmpty
+              ? `Ainda não publiquei projetos de ${areaInfo.noun} por aqui.`
+              : "Nenhum projeto com essa combinação de filtros."}
+          </p>
+          <button type="button" className={styles.emptyAction} onClick={areaIsEmpty ? clearArea : clearAll}>
+            {areaIsEmpty ? "Enquanto isso, veja os outros →" : "Limpar os filtros →"}
+          </button>
+        </div>
+      )}
 
       <ul className={styles.grid}>
         {visible.map((project, index) => (
