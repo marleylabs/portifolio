@@ -107,7 +107,7 @@ export default async function ArticlePage({ params }: PageProps<"/[category]/[sl
       <footer className={styles.footer}>
         <nav aria-label="Mais artigos" className={styles.footerLinks}>
           <Link href={`/${article.category}`}>← Mais sobre {categoryMeta.label}</Link>
-          <Link href="/artigos">Todos os artigos</Link>
+          <Link href="/artigos">← Todos os artigos</Link>
         </nav>
       </footer>
     </article>

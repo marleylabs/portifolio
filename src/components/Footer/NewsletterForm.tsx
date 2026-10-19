@@ -77,7 +77,7 @@ export function NewsletterForm() {
         />
         <button type="submit" className={forms.submit} disabled={isPending}>
           {isPending && <span className={forms.spinner} aria-hidden="true" />}
-          {isPending ? "Enviando…" : "Inscrever"}
+          {isPending ? "Enviando…" : "Quero receber"}
         </button>
       </div>
       {error && (

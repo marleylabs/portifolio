@@ -23,7 +23,7 @@ export function ConfirmForm() {
     return (
       <div className={styles.result} data-status={state.status} role="status">
         <p>{state.message}</p>
-        <Link href="/artigos">Ler os artigos →</Link>
+        <Link href="/artigos">Todos os artigos →</Link>
       </div>
     );
   }

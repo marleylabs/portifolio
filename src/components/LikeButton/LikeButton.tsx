@@ -154,7 +154,7 @@ export function LikeButton({ contentId, noun, max: MAX }: LikeButtonProps) {
       ? "Curtidas indisponíveis no momento"
       : status === "loading" || !state
         ? `Curtir este ${noun}`
-        : `Curtir este ${noun}. ${state.total} ${state.total === 1 ? "curtida" : "curtidas"}; você curtiu ${mine} de ${MAX} vezes.`;
+        : `Curtir este ${noun}. ${state.total} ${state.total === 1 ? "curtida" : "curtidas"}; você deu ${mine} de ${MAX} curtidas.`;
 
   return (
     <div className={styles.wrapper} data-status={status}>

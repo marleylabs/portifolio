@@ -30,14 +30,14 @@ export const CONTACT_TOPICS = {
 } as const;
 
 export const contactSchema = z.object({
-  name: z.string().check(z.trim(), z.minLength(2, "Conte como devo te chamar."), z.maxLength(80, "Use até 80 caracteres.")),
+  name: z.string().check(z.trim(), z.minLength(2, "Escreva seu nome (pelo menos 2 letras)."), z.maxLength(80, "Use até 80 caracteres.")),
   email,
   topic: z.enum(Object.keys(CONTACT_TOPICS) as [keyof typeof CONTACT_TOPICS], {
     error: "Escolha um assunto.",
   }),
   message: z.string().check(
     z.trim(),
-    z.minLength(20, "Escreva pelo menos 20 caracteres."),
+    z.minLength(20, "Escreva uma mensagem (pelo menos 20 caracteres)."),
     z.maxLength(5000, "Use até 5.000 caracteres."),
   ),
 });

@@ -117,3 +117,11 @@ Os números que contam são os de visitantes de verdade.
       nomes como "Frontend: React e Next.js. Ver projetos".
 - [ ] **Filtro por área:** cada planeta abre /projetos com o chip da área; uma área sem
       projetos mostra "Ainda não publiquei projetos de … por aqui."
+
+## Lote 6 — textos
+
+- [ ] **Imagem de compartilhamento:** cole a URL da home no
+      [opengraph.xyz](https://www.opengraph.xyz/) (ou num post rascunho do LinkedIn): o
+      título é "Sou desenvolvedor fullstack e crio sistemas que acabam com trabalho manual."
+      e a descrição é a nova, sem cortes. Redes guardam a imagem antiga em cache; no
+      LinkedIn, use o Post Inspector para atualizar.

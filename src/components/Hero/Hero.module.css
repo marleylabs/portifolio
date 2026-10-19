@@ -60,8 +60,14 @@
   max-width: 34ch;
   margin: var(--space-6) 0 0;
   color: var(--color-text-muted);
-  font-size: var(--text-xl);
+  font-size: var(--text-lg);
   line-height: 1.5;
+}
+
+@media (min-width: 56rem) {
+  .subtitle {
+    font-size: var(--text-xl);
+  }
 }
 
 .highlight {

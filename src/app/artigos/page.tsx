@@ -4,11 +4,12 @@ import { CategoryNav } from "@/components/CategoryNav/CategoryNav";
 import { PageHeader } from "@/components/PageHeader/PageHeader";
 import { PostCard } from "@/components/PostCard/PostCard";
 import { getAllArticles, getArticleCategories, getHighlights } from "@/lib/content";
+import { site } from "@/lib/site";
 import styles from "../listing.module.css";
 
 export const metadata: Metadata = pageMetadata({
   title: "Artigos",
-  description: "Artigos sobre desenvolvimento web, interfaces e engenharia de produto.",
+  description: `Artigos de ${site.name} sobre desenvolvimento web, interfaces e engenharia de produto, com código comentado e o porquê de cada decisão técnica.`,
   path: "/artigos",
 });
 

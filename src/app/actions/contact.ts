@@ -31,7 +31,7 @@ export async function sendContactMessage(_: ContactState, formData: FormData): P
   try {
     const refund = await allowSubmission("contact", 3, 60 * 60);
     if (!refund) {
-      return { status: "error", message: "Você já enviou várias mensagens. Tente de novo mais tarde.", values };
+      return { status: "error", message: `Você já enviou várias mensagens. Tente de novo daqui a uma hora ou escreva para ${site.email}.`, values };
     }
 
     const { name, email, topic, message } = parsed.data;

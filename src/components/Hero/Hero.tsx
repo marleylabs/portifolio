@@ -8,7 +8,7 @@ import { HeroWaves } from "./HeroWaves";
 import styles from "./Hero.module.css";
 
 export function Hero() {
-  const { before, highlight, after } = hero.valueProposition;
+  const { before, highlight, after } = hero.proof;
 
   return (
     <section className={styles.hero} aria-labelledby="hero-title">
@@ -19,16 +19,17 @@ export function Hero() {
             Olá, eu sou <span className={styles.name}>{hero.name}</span>
           </h1>
           <p className={styles.subtitle}>
-            {hero.role} {before}{" "}
+            {/* Espaço não separável: o destaque nunca fica sozinho na última linha. */}
+            {hero.intro} {before}{"\u00a0"}
             <Sparkles>
               <strong className={styles.highlight}>{highlight}</strong>
-            </Sparkles>{" "}
+            </Sparkles>
             {after}
           </p>
           <div className={styles.actions}>
             <PushButton href="/projetos">Ver projetos</PushButton>
             <PushButton href="/artigos" variant="secondary">
-              Ler artigos
+              Ler os artigos
             </PushButton>
           </div>
         </div>

@@ -27,7 +27,7 @@ export async function subscribeToNewsletter(_: NewsletterState, formData: FormDa
   try {
     const refund = await allowSubmission("newsletter", 5, 60 * 60);
     if (!refund) {
-      return { status: "error", message: "Muitas tentativas. Tente de novo mais tarde.", values };
+      return { status: "error", message: "Muitas tentativas. Tente de novo daqui a uma hora.", values };
     }
     // Por e-mail também: impede usar o formulário para encher a caixa de alguém
     // (trocando de IP). O excedente é ignorado em silêncio.

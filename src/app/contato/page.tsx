@@ -7,7 +7,7 @@ import styles from "./page.module.css";
 
 export const metadata: Metadata = pageMetadata({
   title: "Contato",
-  description: `Como falar com ${site.name}: formulário, e-mail e redes.`,
+  description: `Fale com ${site.name} sobre um projeto, uma vaga ou só para conversar. Use o formulário, mande um e-mail ou me encontre nas redes.`,
   path: "/contato",
 });
 

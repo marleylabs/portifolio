@@ -1,13 +1,13 @@
 ---
-title: Este portfólio
+title: Como construí este portfólio
 slug: este-portfolio
 category: produto
-summary: Um site pessoal estático, acessível e cheio de pequenas interações. Ele foi pensado para ter personalidade sem atrapalhar a leitura.
+summary: Um site pessoal estático, acessível e cheio de pequenas interações. Construí este site para ter personalidade sem sacrificar a leitura.
 publishedOn: 2026-10-08
 tags: [portfólio, design]
 cover:
   src: /projects/este-portfolio/cover.png
-  alt: Página inicial do portfólio, com o título "Olá, eu sou Anderson", um mascote laranja sorrindo e ondas coloridas ao fundo.
+  alt: Página inicial do portfólio, com o título "Olá, eu sou Anderson", um mascote laranja com planetas em órbita e ondas violeta ao fundo.
 area: [frontend, backend]
 stack: [Next.js, TypeScript, MDX, CSS Modules, Shiki, Zod]
 role: Design e desenvolvimento
@@ -69,12 +69,13 @@ o Next.js gera todas as páginas como HTML estático, que a Vercel serve pela CD
   pintura.
 - **Molas sem biblioteca.** Uma simulação física gera curvas `linear()` do CSS. Assim, as
   animações sempre presentes (header, botões) não custam JavaScript.
-- **Vidro fosco realista.** O `backdrop-filter` só enxerga o que está atrás do elemento; o blur
-  precisou de uma camada mais alta que o header, recortada por máscara.
+- **Vidro fosco realista.** O `backdrop-filter` só enxerga o que está atrás do elemento; o desfoque
+  precisou de uma camada acima do cabeçalho, recortada por máscara.
 
 ## Resultado
 
-Um site em que a página inicial carrega pouco JavaScript além do próprio React, com contraste
+Um site em que a página inicial carrega cerca de 175 KB de JavaScript comprimido, já contando
+React e Next.js, com contraste
 AA verificado automaticamente nos dois temas e todas as animações desligadas para quem pede
 menos movimento.
 

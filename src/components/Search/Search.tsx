@@ -124,7 +124,7 @@ export function Search() {
     status === "loading"
       ? "Carregando…"
       : status === "error"
-        ? "Não foi possível carregar a busca. Tente de novo mais tarde."
+        ? "Não foi possível carregar a busca. Recarregue a página e tente de novo."
         : search && results.length === 0
           ? `Nada encontrado para “${query}”.`
           : "";
