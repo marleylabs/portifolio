@@ -56,7 +56,7 @@ conteúdo e textos da interface em português (pt-BR).
 | 4 — Responsividade e tokens | Concluído (4a522e7): header com breakpoint próprio de 56rem, geral 45rem, logo com reticências ~320px (nunca abreviar o nome) |
 | 5 — Visual | Concluído (027b366, 564ea36, 853b1e3): direção "Cósmica" como tokens padrão, mascote orbital, sistema solar no hero, olhos que seguem, planeta fugido na 404, áreas nos projetos + filtro `?area=` |
 | 6 — Textos | Concluído: nova copy (hero com prova "15 planilhas… 50 → 4 minutos", `src/lib/site.ts`, estudo de caso, artigo, formulários) e novo `cover.png`. Revisado com ponytail-review e aprovado em 19/10/2026 |
-| 7 | Pendente. Inclui corrigir os 2 erros do `next dev` em `docs/pendencias.md`. Pular o item 40 |
+| 7 — Erros do `next dev` | Concluído em 19/10/2026: `instant = false` em `/[category]`, `/[category]/[slug]` e `/projetos/[slug]`; `generateMetadata` chama `notFound()`. A lista original de outros itens do Lote 7 se perdeu na troca de máquina; o usuário decidiu seguir sem eles. Limitação registrada em `docs/pendencias.md` |
 | 8 — Dependências (`npm audit`) | Pendente |
 
 Decisões registradas:
@@ -68,5 +68,4 @@ Decisões registradas:
 - `este-portfolio.mdx` não deve citar "Motion" na stack (confirmado; já não cita).
 - Copy: T2 só em texto corrido, não em código; T9 é o número medido após o Lote 3.
 
-Próximo passo sugerido: começar o Lote 7 (diagnóstico e plano para aprovação), incluindo os
-2 erros do `next dev` em `docs/pendencias.md`.
+Próximo passo sugerido: Lote 8 (`npm audit`: 9 vulnerabilidades, 4 moderadas e 5 altas, em 19/10/2026).

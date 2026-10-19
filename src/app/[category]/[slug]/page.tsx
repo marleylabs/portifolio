@@ -14,6 +14,9 @@ import { extractHeadings } from "@/lib/toc";
 import prose from "@/components/Prose/Prose.module.css";
 import styles from "../../entry.module.css";
 
+// Bloqueia em vez de servir um App Shell, para o 404 sair com status 404: ver app/[category]/page.tsx.
+export const instant = false;
+
 /** Só artigos com página interna: os externos (externalUrl) levam direto para fora. */
 export async function generateStaticParams() {
   const articles = await getAllArticles();
@@ -23,7 +26,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<"/[category]/[slug]">): Promise<Metadata> {
   const { category, slug } = await params;
   const article = await getArticle(category, slug);
-  if (!article) return {};
+  if (!article) notFound();
 
   const { title, summary, publishedOn, updatedOn, tags } = article;
   return pageMetadata({

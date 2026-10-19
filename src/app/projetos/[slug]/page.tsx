@@ -17,6 +17,9 @@ import { extractHeadings } from "@/lib/toc";
 import prose from "@/components/Prose/Prose.module.css";
 import styles from "../../entry.module.css";
 
+// Bloqueia em vez de servir um App Shell, para o 404 sair com status 404: ver app/[category]/page.tsx.
+export const instant = false;
+
 /** Só projetos com página interna: os externos (externalUrl) levam direto para fora. */
 export async function generateStaticParams() {
   const projects = await getAllProjects();
@@ -26,7 +29,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<"/projetos/[slug]">): Promise<Metadata> {
   const { slug } = await params;
   const project = await getProject(slug);
-  if (!project) return {};
+  if (!project) notFound();
 
   const { title, summary, publishedOn, updatedOn, tags } = project;
   return pageMetadata({

@@ -2,25 +2,23 @@
 
 Problemas encontrados durante as melhorias que ficaram para um lote específico.
 
-## Lote 7 — erros que só aparecem no `next dev`
+## Lote 7 — erros que só aparecem no `next dev` (resolvido em 19/10/2026)
 
-Encontrados em 12/10/2026 durante o Lote 5b. Existem também sem nenhuma mudança do 5b
-(testado removendo o seletor de direções): são anteriores. O build de produção passa e
-não é afetado; no `next dev`, o indicador do Next mostra "2 issues".
+Os dois erros ("did not produce a static shell" e "params accessed outside of <Suspense>")
+apareciam em `/[category]`, `/[category]/[slug]` e também em `/projetos/[slug]`. Resolvido com
+`export const instant = false` nas três rotas: elas podem bloquear em vez de servir um App
+Shell, e as páginas conhecidas continuam estáticas no build. `<Suspense>` foi descartado
+porque um endereço inexistente passaria a responder 200 em vez de 404.
 
-1. **A rota `/[category]` captura endereços inexistentes (ex.: `/pagina-perdida`).**
-   No dev: `InvariantError: Route "/[category]" did not produce a static shell and Next.js
-   was unable to determine a reason`, seguido de "Encountered a script tag while rendering
-   React component" (o script inline de preferências do `layout.tsx`, re-renderizado no
-   cliente durante a recuperação do erro).
-   Investigar: `notFound()` para categorias que não existem em `src/app/[category]/page.tsx`
-   (e `generateStaticParams` com `dynamicParams = false`, se a versão do Next pedir), para a
-   404 sair da rota dinâmica.
+O `generateMetadata` das três rotas também chama `notFound()` (antes devolvia `{}`), senão
+a aba da 404 mostrava o título da home, ou "Artigos sobre React" numa categoria sem artigos.
 
-2. **`params` lidos fora de `<Suspense>` em `/[category]/[slug]`.**
-   No dev: `Route "/[category]/[slug]": Next.js encountered URL data during prerendering or a
-   navigation. params or searchParams accessed outside of <Suspense> may prevent the
-   navigation from being instant`.
-   Investigar na documentação local do Next 16 (`node_modules/next/dist/docs/`): envolver o
-   trecho que lê `params` em `<Suspense>` ou marcar a rota conforme a opção indicada na
-   mensagem (`instant`), sem perder a página estática.
+## Limitação conhecida — conteúdo da 404 nas rotas dinâmicas
+
+Em `/pagina-perdida`, `/css/nao-existe` ou `/projetos/nao-existe`, o status é 404 e o
+`noindex` está no HTML, mas o conteúdo da página 404 (e o `<title>`) é montado no navegador,
+não vem no HTML do servidor. No `next dev` isso gera o aviso "Encountered a script tag while
+rendering React component" (o script de preferências do `layout.tsx` re-renderizado no
+cliente; ele já rodou no HTML do servidor, então tema e som continuam certos).
+Quem navega sem JavaScript vê a página vazia. Corrigir exigiria checar o endereço no Proxy
+antes da renderização; não vale a complexidade agora. Rever se o Next mudar esse comportamento.

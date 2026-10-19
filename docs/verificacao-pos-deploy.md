@@ -125,3 +125,11 @@ Os números que contam são os de visitantes de verdade.
       título é "Sou desenvolvedor fullstack e crio sistemas que acabam com trabalho manual."
       e a descrição é a nova, sem cortes. Redes guardam a imagem antiga em cache; no
       LinkedIn, use o Post Inspector para atualizar.
+
+## Lote 7 — 404 nas rotas dinâmicas
+
+- [ ] **Status 404:** `curl -I https://SEU-DOMINIO/pagina-perdida`, `/css/nao-existe` e
+      `/projetos/nao-existe` respondem `404` (não `200`), e a aba mostra
+      "Página não encontrada".
+- [ ] **Páginas válidas seguem estáticas:** `curl -I` em um artigo e em um projeto mostra
+      `x-vercel-cache: HIT` a partir da segunda requisição.
