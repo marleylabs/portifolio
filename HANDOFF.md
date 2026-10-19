@@ -4,7 +4,7 @@
 > local da máquina anterior, que não vai junto com o repositório. Depois de ler, salve os
 > pontos relevantes na sua memória e pergunte ao usuário por onde continuar.
 
-Atualizado em 18/10/2026.
+Atualizado em 19/10/2026.
 
 ## Preparar o ambiente
 
@@ -64,9 +64,8 @@ Decisões registradas:
 - CSP aplicada de verdade (não Report-Only).
 - Item 18: confirmar que a Vercel sempre envia `x-forwarded-for` antes de rejeitar requisições sem IP.
 - Avisos de Permissions-Policy do Sandpack no console: aceitos, manter.
-- Planetas do sistema solar (Next.js, Node.js, PostgreSQL, IA, Vercel) são placeholders —
-  o usuário deve confirmar as stacks.
-- `este-portfolio.mdx` ainda pode listar "Motion" na stack: conteúdo pessoal, perguntar.
+- Planetas do sistema solar (Next.js, Node.js, PostgreSQL, IA, Vercel): confirmados pelo usuário em 19/10/2026.
+- `este-portfolio.mdx` não deve citar "Motion" na stack (confirmado; já não cita).
 - Copy: T2 só em texto corrido, não em código; T9 é o número medido após o Lote 3.
 
 Próximo passo sugerido: revisar com o usuário o WIP do Lote 6 (`git show HEAD`), rodar
