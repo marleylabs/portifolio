@@ -9,6 +9,7 @@ import styles from "./Hero.module.css";
 
 export function Hero() {
   const { before, highlight, after } = hero.proof;
+  const cut = before.lastIndexOf(" ");
 
   return (
     <section className={styles.hero} aria-labelledby="hero-title">
@@ -19,12 +20,16 @@ export function Hero() {
             Olá, eu sou <span className={styles.name}>{hero.name}</span>
           </h1>
           <p className={styles.subtitle}>
-            {/* Espaço não separável: o destaque nunca fica sozinho na última linha. */}
-            {hero.intro} {before}{"\u00a0"}
-            <Sparkles>
-              <strong className={styles.highlight}>{highlight}</strong>
-            </Sparkles>
-            {after}
+            {hero.intro} {before.slice(0, cut)}{" "}
+            {/* O Sparkles é inline-block, e a linha pode quebrar antes dele: o nowrap mantém a
+                última palavra junto do destaque, que nunca fica sozinho na última linha. */}
+            <span className={styles.nowrap}>
+              {before.slice(cut + 1)}{" "}
+              <Sparkles>
+                <strong className={styles.highlight}>{highlight}</strong>
+              </Sparkles>
+              {after}
+            </span>
           </p>
           <div className={styles.actions}>
             <PushButton href="/projetos">Ver projetos</PushButton>

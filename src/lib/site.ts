@@ -22,7 +22,7 @@ export const hero = {
   intro: "Sou desenvolvedor fullstack e crio sistemas que acabam com trabalho manual.",
   proof: {
     before: "No meu último projeto, 15 planilhas viraram uma plataforma, e uma tarefa de 50 minutos passou a levar",
-    highlight: "4",
+    highlight: "4 minutos",
     after: ".",
   },
   avatarAlt: "Ilustração de Anderson Marley sorrindo",

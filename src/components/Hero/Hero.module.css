@@ -70,6 +70,10 @@
   }
 }
 
+.nowrap {
+  white-space: nowrap;
+}
+
 .highlight {
   color: var(--color-text);
   font-weight: 800;

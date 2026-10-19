@@ -55,7 +55,7 @@ conteúdo e textos da interface em português (pt-BR).
 | 3 — Performance | Concluído (4a19f73): Motion removido; filtro de /projetos com `<ViewTransition>` + `--ease-spring`; perf 96/96/97, JS gzip −23,7% /projetos e −23,5% no artigo. Medições em `.lighthouse/` |
 | 4 — Responsividade e tokens | Concluído (4a522e7): header com breakpoint próprio de 56rem, geral 45rem, logo com reticências ~320px (nunca abreviar o nome) |
 | 5 — Visual | Concluído (027b366, 564ea36, 853b1e3): direção "Cósmica" como tokens padrão, mascote orbital, sistema solar no hero, olhos que seguem, planeta fugido na 404, áreas nos projetos + filtro `?area=` |
-| 6 — Textos | **Em andamento.** Commit "WIP Lote 6" contém a nova copy (hero, `src/lib/site.ts`, estudo de caso, artigo, formulários) e o novo `cover.png`. Ainda não passou por ponytail-review nem foi aprovado pelo usuário |
+| 6 — Textos | Concluído: nova copy (hero com prova "15 planilhas… 50 → 4 minutos", `src/lib/site.ts`, estudo de caso, artigo, formulários) e novo `cover.png`. Revisado com ponytail-review e aprovado em 19/10/2026 |
 | 7 | Pendente. Inclui corrigir os 2 erros do `next dev` em `docs/pendencias.md`. Pular o item 40 |
 | 8 — Dependências (`npm audit`) | Pendente |
 
@@ -68,5 +68,5 @@ Decisões registradas:
 - `este-portfolio.mdx` não deve citar "Motion" na stack (confirmado; já não cita).
 - Copy: T2 só em texto corrido, não em código; T9 é o número medido após o Lote 3.
 
-Próximo passo sugerido: revisar com o usuário o WIP do Lote 6 (`git show HEAD`), rodar
-`ponytail-review`, ajustar e fechar o lote com um commit definitivo.
+Próximo passo sugerido: começar o Lote 7 (diagnóstico e plano para aprovação), incluindo os
+2 erros do `next dev` em `docs/pendencias.md`.
