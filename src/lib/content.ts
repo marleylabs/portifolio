@@ -3,12 +3,11 @@ import "server-only";
 import { existsSync } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
-import matter from "gray-matter";
-import yaml from "js-yaml";
 import { cacheLife } from "next/cache";
 import readingTime from "reading-time";
 import { z } from "zod";
 import { ARTICLE_CATEGORIES, ARTICLE_CATEGORY_KEYS, PROJECT_AREA_KEYS, PROJECT_CATEGORY_KEYS, RESERVED_SEGMENTS, isArticleCategory, type ArticleCategory } from "./categories";
+import { parseFrontmatter } from "./frontmatter";
 import { HIGHLIGHTS } from "./highlights";
 
 /*
@@ -26,15 +25,6 @@ const CONTENT_DIR = path.join(process.cwd(), "content");
 
 // Mensagens de validação padrão do zod em português.
 z.config(z.locales.ptBR());
-
-/*
- * YAML com o schema JSON: sem conversões automáticas. O padrão do YAML transforma
- * `2026-13-45` num Date e o JavaScript "corrige" para 14/02/2027 — o erro sumiria.
- * Lendo como texto, quem valida a data (inclusive o calendário) é o zod.
- */
-const matterOptions = {
-  engines: { yaml: (source: string) => yaml.load(source, { schema: yaml.JSON_SCHEMA }) as object },
-};
 
 // ---------- Schemas ----------
 
@@ -142,7 +132,7 @@ async function readCollection<Schema extends z.ZodType>(directory: string, schem
   return Promise.all(
     files.map(async (file) => {
       const raw = await readFile(path.join(absolute, file), "utf8");
-      const { data, content } = matter(raw, matterOptions);
+      const { data, content } = parseFrontmatter(raw);
       const result = schema.safeParse(data);
       if (!result.success) {
         throw new Error(`Frontmatter inválido em content/${directory}/${file}:\n${z.prettifyError(result.error)}`);
@@ -374,7 +364,7 @@ export async function getAboutPage(): Promise<AboutPage> {
   "use cache";
   cacheLife("max");
   const file = "content/pages/sobre.mdx";
-  const { data, content } = matter(await readFile(path.join(process.cwd(), file), "utf8"), matterOptions);
+  const { data, content } = parseFrontmatter(await readFile(path.join(process.cwd(), file), "utf8"));
   const result = aboutSchema.safeParse(data);
   if (!result.success) throw new Error(`Frontmatter inválido em ${file}:\n${z.prettifyError(result.error)}`);
   return { ...result.data, body: content };
