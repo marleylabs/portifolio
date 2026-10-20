@@ -40,7 +40,7 @@
   margin-bottom: 0;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 45rem) {
   .sidenote {
     margin-inline: calc(var(--gutter) * -1);
     border-radius: 0;

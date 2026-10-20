@@ -17,7 +17,7 @@
   text-align: center;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 45rem) {
   .figure {
     margin-inline: 0;
   }

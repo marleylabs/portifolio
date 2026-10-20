@@ -1,8 +1,8 @@
 export const site = {
   name: "Anderson Marley",
-  title: "Anderson Marley — Desenvolvedor Fullstack",
+  title: "Anderson Marley · desenvolvedor fullstack",
   description:
-    "Portfólio e blog de Anderson Marley, desenvolvedor fullstack. Artigos sobre web, interfaces e engenharia de produto, e estudos de caso de projetos.",
+    "Anderson Marley, desenvolvedor fullstack que cria sistemas para acabar com trabalho manual. Estudos de caso, como 15 planilhas que viraram uma plataforma.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
   locale: "pt-BR",
   email: "anderson.marley@projetacs.com",
@@ -15,14 +15,15 @@ export const site = {
   } as Partial<Record<"github" | "linkedin" | "x" | "bluesky", string>>,
 } as const;
 
-/** Textos do hero da home. A palavra em `highlight` ganha o efeito de sparkles. */
+/** Textos do hero da home. O trecho em `highlight` ganha o efeito de sparkles. */
 export const hero = {
   name: "Anderson",
-  role: "Desenvolvedor fullstack que",
-  valueProposition: {
-    before: "transforma ideias em produtos web",
-    highlight: "encantadores",
-    after: "— rápidos, acessíveis e cuidados do banco de dados ao último pixel.",
+  /** Também é o título da imagem de compartilhamento. */
+  intro: "Sou desenvolvedor fullstack e crio sistemas que acabam com trabalho manual.",
+  proof: {
+    before: "No meu último projeto, 15 planilhas viraram uma plataforma, e uma tarefa de 50 minutos passou a levar",
+    highlight: "4 minutos",
+    after: ".",
   },
   avatarAlt: "Ilustração de Anderson Marley sorrindo",
 } as const;

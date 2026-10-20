@@ -1,24 +1,22 @@
 .card {
   position: relative;
   padding: var(--space-6);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   transition:
     var(--transition-colors),
-    background-color var(--duration-fast) var(--ease-out);
+    background-color var(--duration-fast) var(--ease-out),
+    transform var(--spring-duration) var(--ease-spring);
 }
 
+/* Mesmo hover dos cards de projeto: fundo + sobe com a mola (--card-lift). */
 .card:hover,
 .card:focus-within {
   background: var(--color-surface-muted);
+  transform: translateY(var(--card-lift));
 }
 
 .category {
   margin: 0 0 var(--space-1);
-  color: var(--color-secondary);
-  font-size: var(--text-sm);
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
 }
 
 .title {

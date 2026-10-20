@@ -21,3 +21,12 @@ const getSnapshot = () => window.matchMedia(REDUCED_MOTION_QUERY).matches;
 export function usePrefersReducedMotion() {
   return useSyncExternalStore(subscribe, getSnapshot, () => true);
 }
+
+/**
+ * O mesmo valor, mas `false` no servidor e na hidratação. Serve para rótulos e dicas
+ * (o HTML estático não deve anunciar "reduzido pelo sistema" para todo mundo); para
+ * decidir se algo se mexe, use usePrefersReducedMotion.
+ */
+export function useSystemReducedMotion() {
+  return useSyncExternalStore(subscribe, getSnapshot, () => false);
+}

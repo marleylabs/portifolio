@@ -2,7 +2,8 @@
   display: none;
 }
 
-@media (max-width: 720px) {
+/* Mesmo breakpoint do header (ver Header.module.css). */
+@media (max-width: 56rem) {
   .trigger {
     display: inline-grid;
   }
@@ -90,13 +91,6 @@
   margin-bottom: var(--space-6);
 }
 
-.heading {
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
 
 .list {
   display: grid;
@@ -143,11 +137,35 @@
 }
 
 .preferences {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: grid;
+  gap: var(--space-2);
   margin-top: auto;
   padding-top: var(--space-6);
   border-top: 1px solid var(--color-border);
   font-weight: 600;
+}
+
+.preference {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* No menu a dica fica escrita (sem hover no toque); o balão do botão sai. */
+.preference [role="tooltip"] {
+  display: none;
+}
+
+.preferenceNote {
+  display: none;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-weight: 400;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .preferenceNote {
+    display: block;
+  }
 }

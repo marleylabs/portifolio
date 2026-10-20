@@ -4,8 +4,24 @@
   padding-inline: var(--gutter);
 }
 
+/* Divisor entre seções: um fio de luz violeta → laranja com uma estrela no meio. */
 .section {
+  position: relative;
   padding-top: var(--space-16);
+  background: linear-gradient(90deg, transparent, var(--color-accent) 25%, var(--color-primary) 75%, transparent) top / 100% 1px
+    no-repeat;
+}
+
+.section::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  width: 13px;
+  height: 13px;
+  translate: -50% 0;
+  background: var(--color-sparkle);
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
 }
 
 .sectionHeader {
@@ -42,12 +58,6 @@
 
 .sidebarTitle {
   margin: 0 0 var(--space-4);
-  color: var(--color-text-muted);
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
 }
 
 .sidebarNav {

@@ -5,6 +5,11 @@
   margin-bottom: var(--space-8);
 }
 
+/*
+ * Pílulas interativas (este filtro e o CategoryNav) seguem as mesmas regras: fonte mono,
+ * borda de 1px, mesma altura, hover com a mola e "selecionado" preenchido — a neutra na
+ * cor primária, a colorida com as próprias cores invertidas (mesmo contraste).
+ */
 .filter {
   --pill-bg: var(--color-surface);
   --pill-fg: var(--color-text);
@@ -14,7 +19,7 @@
   gap: var(--space-2);
   min-height: 2.5rem;
   padding: var(--space-1) var(--space-4);
-  border: 2px solid transparent;
+  border: 1px solid transparent;
   border-radius: var(--radius-full);
   background: var(--pill-bg);
   color: var(--pill-fg);
@@ -37,21 +42,29 @@
 
 .filter:active:not(:disabled) {
   transform: translateY(1px) scale(0.97);
-  transition-duration: 60ms;
+  transition-duration: var(--duration-press);
 }
 
-/* Selecionado: a pílula ganha contorno na própria cor do texto. */
 .filter[aria-pressed="true"] {
   border-color: var(--pill-fg);
+  background: var(--pill-fg);
+  color: var(--pill-bg);
+}
+
+.filter:not([data-colored])[aria-pressed="true"] {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
 }
 
 .filter:disabled {
   cursor: default;
 }
 
+/* Sem opacidade: com ela o número ficava abaixo do contraste AA nas pílulas claras. */
 .count {
-  font-size: 0.75rem;
-  opacity: 0.75;
+  font-size: var(--text-2xs);
+  font-weight: 700;
 }
 
 .grid {
@@ -61,4 +74,66 @@
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+/* ---------- Filtro de área (vem dos planetas do hero) ---------- */
+
+.areaChip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: calc(var(--space-4) * -1) 0 var(--space-8);
+  padding: var(--space-1) var(--space-1) var(--space-1) var(--space-4);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-full);
+  color: var(--color-text);
+  font-size: var(--text-sm);
+}
+
+.areaClear {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.areaClear:hover {
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+}
+
+/* ---------- Estado vazio ---------- */
+
+.empty {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-2);
+  padding: var(--space-8);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-muted);
+  font-size: var(--text-lg);
+}
+
+.empty p {
+  margin: 0;
+}
+
+.emptyAction {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-primary);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.emptyAction:hover {
+  text-decoration: underline;
 }

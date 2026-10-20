@@ -3,21 +3,12 @@ import "server-only";
 import { existsSync } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
-import matter from "gray-matter";
-import yaml from "js-yaml";
 import { cacheLife } from "next/cache";
 import readingTime from "reading-time";
 import { z } from "zod";
-import {
-  ARTICLE_CATEGORIES,
-  ARTICLE_CATEGORY_KEYS,
-  PROJECT_CATEGORY_KEYS,
-  RESERVED_SEGMENTS,
-  isArticleCategory,
-  type ArticleCategory,
-} from "./categories";
-import { POPULAR_FALLBACK } from "./popular";
-import { getViewCounts } from "./views";
+import { ARTICLE_CATEGORIES, ARTICLE_CATEGORY_KEYS, PROJECT_AREA_KEYS, PROJECT_CATEGORY_KEYS, RESERVED_SEGMENTS, isArticleCategory, type ArticleCategory } from "./categories";
+import { parseFrontmatter } from "./frontmatter";
+import { HIGHLIGHTS } from "./highlights";
 
 /*
  * Modelo de conteúdo.
@@ -34,15 +25,6 @@ const CONTENT_DIR = path.join(process.cwd(), "content");
 
 // Mensagens de validação padrão do zod em português.
 z.config(z.locales.ptBR());
-
-/*
- * YAML com o schema JSON: sem conversões automáticas. O padrão do YAML transforma
- * `2026-13-45` num Date e o JavaScript "corrige" para 14/02/2027 — o erro sumiria.
- * Lendo como texto, quem valida a data (inclusive o calendário) é o zod.
- */
-const matterOptions = {
-  engines: { yaml: (source: string) => yaml.load(source, { schema: yaml.JSON_SCHEMA }) as object },
-};
 
 // ---------- Schemas ----------
 
@@ -107,6 +89,8 @@ const projectSchema = z
     /** Projetos sempre têm capa: é ela que sustenta os cards. */
     cover: coverField,
     stack: z.array(z.string().trim().min(1)).min(1, "liste ao menos uma tecnologia"),
+    /** Áreas do trabalho (os planetas do hero): frontend, backend, dados, ia, devops. */
+    area: z.array(z.enum(PROJECT_AREA_KEYS)).default([]),
     featured: z.boolean().default(false),
     /** Opcional: seu papel no projeto ("Fullstack", "Front-end e design"…). */
     role: z.string().trim().min(1).optional(),
@@ -148,7 +132,7 @@ async function readCollection<Schema extends z.ZodType>(directory: string, schem
   return Promise.all(
     files.map(async (file) => {
       const raw = await readFile(path.join(absolute, file), "utf8");
-      const { data, content } = matter(raw, matterOptions);
+      const { data, content } = parseFrontmatter(raw);
       const result = schema.safeParse(data);
       if (!result.success) {
         throw new Error(`Frontmatter inválido em content/${directory}/${file}:\n${z.prettifyError(result.error)}`);
@@ -322,41 +306,25 @@ export async function getProject(slug: string): Promise<Project | null> {
 }
 
 /**
- * Artigos mais lidos.
- * A popularidade decide QUAIS entram: pelas visualizações quando houver dados
- * (só artigos internos são contados), senão pela lista manual de lib/popular.ts.
+ * Artigos em destaque, da lista manual de lib/highlights.ts.
  * A ordem de exibição, como no resto do site, é por data (mais recente primeiro).
  */
-export async function getPopular({ limit = 3 }: { limit?: number } = {}): Promise<ArticleSummary[]> {
-  const articles = await getAllArticles();
-  const views = await getViewCounts();
-
-  let picked: ArticleSummary[] = [];
-  if (views && views.size > 0) {
-    picked = articles
-      .filter((article) => (views.get(article.id) ?? 0) > 0)
-      .sort((a, b) => (views.get(b.id) ?? 0) - (views.get(a.id) ?? 0))
-      .slice(0, limit);
-  }
-
-  if (picked.length === 0) {
-    const byId = new Map(articles.map((article) => [article.id, article]));
-    picked = POPULAR_FALLBACK.slice(0, limit).map((id) => {
-      const article = byId.get(id);
-      if (!article) throw new Error(`lib/popular.ts: "${id}" não corresponde a nenhum artigo publicado`);
-      return article;
-    });
-  }
-
-  return [...picked].sort(byDateDesc);
+export async function getHighlights({ limit = 3 }: { limit?: number } = {}): Promise<ArticleSummary[]> {
+  const byId = new Map((await getAllArticles()).map((article) => [article.id, article]));
+  const picked = HIGHLIGHTS.slice(0, limit).map((id) => {
+    const article = byId.get(id);
+    if (!article) throw new Error(`lib/highlights.ts: "${id}" não corresponde a nenhum artigo publicado`);
+    return article;
+  });
+  return picked.sort(byDateDesc);
 }
 
 // ---------- Página "Sobre" ----------
 
 /*
  * content/pages/sobre.mdx: o corpo é o texto pessoal; o frontmatter guarda foto,
- * linha do tempo e stack. Itens com `example: true` aparecem com um selo "exemplo"
- * na página — um lembrete visível para trocar por dados reais antes de publicar.
+ * linha do tempo e stack. Na stack, itens com `example: true` aparecem com um selo
+ * "exemplo"; na linha do tempo, ficam fora da página (a seção some se só houver exemplos).
  */
 const aboutSchema = z
   .object({
@@ -396,7 +364,7 @@ export async function getAboutPage(): Promise<AboutPage> {
   "use cache";
   cacheLife("max");
   const file = "content/pages/sobre.mdx";
-  const { data, content } = matter(await readFile(path.join(process.cwd(), file), "utf8"), matterOptions);
+  const { data, content } = parseFrontmatter(await readFile(path.join(process.cwd(), file), "utf8"));
   const result = aboutSchema.safeParse(data);
   if (!result.success) throw new Error(`Frontmatter inválido em ${file}:\n${z.prettifyError(result.error)}`);
   return { ...result.data, body: content };

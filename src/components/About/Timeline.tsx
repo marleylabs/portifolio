@@ -14,7 +14,6 @@ export function Timeline({ items }: { items: AboutPage["timeline"] }) {
             <div className={styles.card}>
               <h3 className={styles.role}>
                 {item.role}
-                {item.example && <span className="example-badge">exemplo</span>}
               </h3>
               <p className={styles.organization}>{item.organization}</p>
               <p className={styles.description}>{item.description}</p>

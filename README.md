@@ -70,9 +70,8 @@ O `<Diagram>` é desenhado em SVG no servidor (zero JS) e gera a descrição ace
 Rascunhos (`draft: true`) também aparecem num build com `SHOW_DRAFTS=true` (útil em previews).
 
 Funções da camada de dados: `getAllArticles`, `getArticlesByCategory`, `getArticle`, `getArticleCategories`,
-`getAllProjects`, `getProject` e `getPopular` — todas em ordem de data decrescente. `getPopular` escolhe os
-artigos pelo contador de visualizações (`src/lib/views.ts`, a implementar) e, sem dados, pela lista manual em
-`src/lib/popular.ts`.
+`getAllProjects`, `getProject` e `getHighlights` — todas em ordem de data decrescente. `getHighlights` devolve
+os artigos em destaque, escolhidos à mão em `src/lib/highlights.ts`.
 
 ### Componentes de MDX (artigos e projetos)
 
@@ -165,7 +164,7 @@ Para a foto, coloque o arquivo em `public/` e preencha `photo: { src, alt }`.
 - **Tema sem flash**: script inline no `<head>` lê o `localStorage` (fallback: `prefers-color-scheme`) e define `data-theme` antes da primeira pintura. Não usamos cookie porque lê-lo no servidor tornaria todas as páginas dinâmicas.
 - **Cores**: cada token é declarado uma vez com `light-dark(claro, escuro)`; o `color-scheme` (vindo de `data-theme`) escolhe a variante. `theme-color` é derivado de `--color-bg` em runtime.
 - **Troca de tema**: a classe temporária `.theme-transition` transiciona só propriedades de cor (`--transition-colors`) por ~350ms; componentes com `transition` própria incluem esse token.
-- **Molas**: transições em CSS usam `--ease-spring`. O Motion só é usado onde há springs interrompíveis/AnimatePresence, e só nessas páginas.
+- **Molas**: transições em CSS usam `--ease-spring` (gerado por `npm run spring-curve`). Sem biblioteca de animação: o filtro de `/projetos` usa View Transitions nativas (`<ViewTransition>` do React) com a mesma mola.
 - **Sons**: um único sprite carregado sob demanda via `use-sound`; o botão no header desliga tudo (preferência salva).
 - **Header**: sticky (IntersectionObserver numa sentinela), logo com letras pulando (Web Animations API + mola de `lib/spring`), pílula de hover calculada por posição, drawer mobile e busca em `<dialog>` nativo (trap de foco, Esc, `@starting-style`). O scroll trava via `:root:has(dialog[open])`.
 - **Vidro fosco**: o `backdrop-filter` fica num filho do header com 200% da altura e `mask-image` na metade de baixo — o blur considera o que está logo abaixo da borda. `pointer-events: none` mantém o conteúdo clicável.

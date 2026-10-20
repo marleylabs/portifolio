@@ -24,6 +24,7 @@
   stroke-width: 2;
 }
 
+/* px de propósito: dentro do SVG, px são unidades do viewBox e escalam com o desenho. */
 .label {
   fill: var(--color-text);
   font-size: 15px;
@@ -67,7 +68,7 @@
   text-align: center;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 45rem) {
   .figure {
     margin-inline: 0;
   }

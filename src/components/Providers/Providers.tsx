@@ -5,8 +5,8 @@ import { PreferencesSync } from "./PreferencesSync";
 import { SoundProvider } from "./SoundProvider";
 
 /**
- * Providers globais. O Motion de propósito NÃO entra aqui: componentes que precisam dele
- * usam <MotionRoot> localmente, então a lib só é baixada nas páginas que a usam.
+ * Providers globais: só preferências e som. Nada de biblioteca de animação; as molas
+ * são CSS (--ease-spring) e o filtro de projetos usa View Transitions nativas.
  */
 export function Providers({ children }: { children: ReactNode }) {
   return (

@@ -11,12 +11,17 @@
   --font-mono: var(--font-jetbrains), ui-monospace, "SFMono-Regular", monospace;
 
   /* Escala fluida: cresce suavemente entre ~360px e ~1200px de viewport. */
+  /* Rótulos pequenos (pílulas, metadados, contadores). Abaixo de --text-2xs não vale a pena: fica ilegível. */
+  --text-2xs: 0.75rem;
+  --text-xs: 0.8125rem;
   --text-sm: clamp(0.875rem, 0.85rem + 0.1vw, 0.9375rem);
   --text-base: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
   --text-lg: clamp(1.1875rem, 1.1rem + 0.4vw, 1.375rem);
   --text-xl: clamp(1.375rem, 1.2rem + 0.75vw, 1.75rem);
   --text-2xl: clamp(1.75rem, 1.45rem + 1.3vw, 2.5rem);
   --text-3xl: clamp(2.25rem, 1.7rem + 2.4vw, 3.75rem);
+  /* Título do hero: o único maior que --text-3xl. */
+  --text-display: clamp(2.75rem, 1.6rem + 4.6vw, 5.25rem);
 
   --leading-tight: 1.15;
   --leading-body: 1.7;
@@ -32,15 +37,27 @@
   --space-16: 4rem;
   --space-24: 6rem;
 
+  /*
+   * Breakpoint principal (mobile ↔ desktop): 45rem (= 720px com a fonte padrão).
+   * Variáveis CSS não funcionam dentro de @media, e o @custom-media só vale no próprio
+   * arquivo (cada CSS Module é processado à parte). Por isso o valor 45rem se repete nos
+   * módulos: se mudar, procure por "45rem" em src/. Em rem, ele acompanha o zoom de texto.
+   * Exceções: o header troca para o menu ☰ em 56rem (é a largura de que ele precisa), e o
+   * Playground usa 768px porque precisa bater com o media query do Sandpack.
+   */
   --content-width: 65ch;
   --wide-width: 72rem;
   --gutter: clamp(1rem, 4vw, 2rem);
   --header-height: 4.5rem;
 
+  --radius-xs: 3px;
   --radius-sm: 6px;
   --radius-md: 12px;
   --radius-lg: 20px;
   --radius-full: 999px;
+
+  /* Quanto um card sobe no hover/foco (com a mola). Igual para cards de artigo e de projeto. */
+  --card-lift: -3px;
 
   /* ---------- Camadas ---------- */
   /*
@@ -56,6 +73,8 @@
   --ease-spring: linear(0, 0.001, 0.041, 0.127, 0.242, 0.372, 0.504, 0.63, 0.745, 0.845, 0.928, 0.993, 1.042, 1.075, 1.095, 1.104, 1.105, 1.099, 1.089, 1.077, 1.063, 1.049, 1.036, 1.024, 1.014, 1.006, 0.999, 0.995, 0.991, 0.99, 0.989, 0.989, 0.99, 0.991, 0.992, 0.994, 0.995, 0.997, 0.998, 0.999, 1, 1, 1.001, 1.001, 1.001, 1.001, 1.001, 1.001, 1.001, 1.001, 1.001, 1, 1, 1, 1);
   --spring-duration: 800ms;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  /* "Afundar" de um botão ao apertar / piscar de olhos: rápido de propósito. */
+  --duration-press: 60ms;
   --duration-fast: 150ms;
   --duration-base: 250ms;
   --duration-theme: 350ms;
@@ -74,7 +93,11 @@
     stroke var(--duration-theme) var(--ease-out);
 }
 
-/* ---------- Esquema de cores ---------- */
+/* ---------- Esquema de cores ----------
+ * Direção "Cósmica" (Lote 5): laranja (brasa) = ação e marca; violeta = o lado brincalhão
+ * (categorias, foco, estrelas). Escuro: espaço profundo azul-grafite, não preto. Claro:
+ * nebulosa clara, branco levemente lavanda.
+ */
 /*
  * Cada cor é declarada UMA vez com light-dark(claro, escuro). Qual valor vale é decidido
  * pelo color-scheme: sem data-theme (sem JS), segue o sistema; com data-theme, a escolha
@@ -93,20 +116,20 @@
 }
 
 :root {
-  --color-bg: light-dark(#fbf8f3, #13121c);
-  --color-surface: light-dark(#ffffff, #1c1a29);
-  --color-surface-muted: light-dark(#f3eee6, #24212f);
-  --color-border: light-dark(#e4dccf, #34304a);
-  --color-text: light-dark(#1f1b2e, #ece8f5);
-  --color-text-muted: light-dark(#5b5568, #aaa3bd);
+  --color-bg: light-dark(#f8f6fd, #0c0f1e);
+  --color-surface: light-dark(#ffffff, #141933);
+  --color-surface-muted: light-dark(#f0ecf9, #1b2140);
+  --color-border: light-dark(#ded7ef, #2b3358);
+  --color-text: light-dark(#1b1930, #ecebf7);
+  --color-text-muted: light-dark(#575470, #a9aac6);
   --color-primary: light-dark(#b83a0e, #ff9a66);
-  --color-primary-hover: light-dark(#962f0b, #ffb68f);
+  --color-primary-hover: light-dark(#942e0a, #ffb68f);
   --color-on-primary: light-dark(#ffffff, #1f1208);
-  --color-secondary: light-dark(#0f6e66, #5fd4c4);
+  --color-secondary: light-dark(#6d3fd1, #b79bff);
   --color-accent: light-dark(#6d3fd1, #b79bff);
   --color-highlight: light-dark(#ffe1c7, #4a2a1a);
   --color-focus: light-dark(#6d3fd1, #b79bff);
-  --color-selection: light-dark(#ffd2ad, #5a3320);
+  --color-selection: light-dark(#e3d7ff, #3b2a6b);
 
   --color-info-bg: light-dark(#e8f1fd, #18233a);
   --color-info-border: light-dark(#2f6fd0, #6ea3f5);
@@ -117,26 +140,40 @@
   --color-danger-bg: light-dark(#fde8e7, #3a1a1c);
   --color-danger-border: light-dark(#c9372f, #f07a72);
   /* Fundo de linha destacada no código: 10% da cor primária (ver code.css). */
-  --color-code-highlight: light-dark(#f8ebe7, #33272f);
+  --color-code-highlight: light-dark(#f6ebe8, #2a2233);
 
-  /* Pílulas de tecnologia: 6 pares fundo/texto, todos AA nos dois temas. */
-  --color-pill-1-bg: light-dark(#dbeafe, #1e2a4a);
-  --color-pill-1-fg: light-dark(#1e40af, #93c5fd);
-  --color-pill-2-bg: light-dark(#dcfce7, #14301f);
-  --color-pill-2-fg: light-dark(#166534, #86efac);
-  --color-pill-3-bg: light-dark(#ede9fe, #2a1f4a);
-  --color-pill-3-fg: light-dark(#5b21b6, #c4b5fd);
-  --color-pill-4-bg: light-dark(#ffedd5, #3a2212);
-  --color-pill-4-fg: light-dark(#9a3412, #fdba74);
-  --color-pill-5-bg: light-dark(#fce7f3, #3a1a2c);
-  --color-pill-5-fg: light-dark(#9d174d, #f9a8d4);
-  --color-pill-6-bg: light-dark(#ccfbf1, #12302d);
-  --color-pill-6-fg: light-dark(#115e59, #5eead4);
+  /* Pílulas de tecnologia: brasa e violeta alternados (pares AA nos dois temas). */
+  --color-pill-1-bg: light-dark(#ffedd5, #3a2212);
+  --color-pill-1-fg: light-dark(#9a3412, #fdba74);
+  --color-pill-2-bg: light-dark(#ede9fe, #2a1f4a);
+  --color-pill-2-fg: light-dark(#5b21b6, #c4b5fd);
+  --color-pill-3-bg: light-dark(#ffedd5, #3a2212);
+  --color-pill-3-fg: light-dark(#9a3412, #fdba74);
+  --color-pill-4-bg: light-dark(#ede9fe, #2a1f4a);
+  --color-pill-4-fg: light-dark(#5b21b6, #c4b5fd);
+  --color-pill-5-bg: light-dark(#ffedd5, #3a2212);
+  --color-pill-5-fg: light-dark(#9a3412, #fdba74);
+  --color-pill-6-bg: light-dark(#ede9fe, #2a1f4a);
+  --color-pill-6-fg: light-dark(#5b21b6, #c4b5fd);
 
   /* Decorativas (sem texto por cima: fora da checagem de contraste de texto). */
-  --color-sparkle: light-dark(#f2a900, #ffd166);
+  /* Céu da Direção "Cósmica": estrelas e brilhos de nebulosa (hero, divisores, rodapé, 404). */
+  --cosmos-star: light-dark(#7c5cd6, #ffffff);
+  --cosmos-violet: light-dark(rgb(139 92 246 / 0.16), rgb(146 85 255 / 0.26));
+  --cosmos-orange: light-dark(rgb(244 116 12 / 0.11), rgb(255 138 36 / 0.16));
+  --color-sparkle: light-dark(#8b5cf6, #ffe3a1);
   --color-depth: light-dark(#1f1b2e, #000000);
-  --color-mascot-ink: light-dark(#1f1b2e, #1f1208);
+  --color-mascot-ink: light-dark(#1d1530, #1a1022);
+  /* Mascote orbital: amarelo-laranja (topo) → laranja → vermelho → violeta (base).
+     No escuro, um pouco mais luminoso para não afundar no fundo. */
+  --color-mascot-1: light-dark(#ffbf1f, #ffcb45);
+  --color-mascot-2: light-dark(#f4740c, #ff8a24);
+  --color-mascot-3: light-dark(#d8361b, #ec4a2a);
+  --color-mascot-4: light-dark(#7a2be0, #9255ff);
+  /* Rebordo dos olhos (a "pálpebra" laranja da referência). */
+  --color-mascot-lid: light-dark(#e2571a, #f06a2a);
+  /* Sombra no chão: no escuro precisa ser mais forte para aparecer. */
+  --color-mascot-floor: light-dark(rgb(31 27 46 / 0.16), rgb(0 0 0 / 0.55));
   --color-mascot-blush: light-dark(#ff8a7a, #ff6f61);
   --color-mascot-shine: light-dark(#ffffff, #fff4e6);
 

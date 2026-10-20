@@ -37,7 +37,6 @@ export function Search() {
   const [activeIndex, setActiveIndex] = useState(0);
   const router = useRouter();
   const playSound = useSoundEffect();
-  const [boopStyle, boop] = useBoop({ rotation: 15, scale: 1.1, timing: 150 });
   const baseId = useId();
   const listId = `${baseId}-results`;
   const optionId = (index: number) => `${baseId}-option-${index}`;
@@ -125,36 +124,14 @@ export function Search() {
     status === "loading"
       ? "Carregando…"
       : status === "error"
-        ? "Não foi possível carregar a busca. Tente de novo mais tarde."
+        ? "Não foi possível carregar a busca. Recarregue a página e tente de novo."
         : search && results.length === 0
           ? `Nada encontrado para “${query}”.`
           : "";
 
   return (
     <>
-      <button
-        type="button"
-        className={iconButton.button}
-        onClick={open}
-        onPointerEnter={boop}
-        aria-label="Buscar"
-        aria-keyshortcuts="Control+K Meta+K /"
-        title="Buscar (Ctrl K ou /)"
-      >
-        <span className={iconButton.icon} style={boopStyle}>
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            aria-hidden="true"
-          >
-            <circle cx="11" cy="11" r="6.5" />
-            <line x1="16" y1="16" x2="20.5" y2="20.5" />
-          </svg>
-        </span>
-      </button>
+      <SearchTrigger onClick={open} />
 
       <dialog
         ref={dialogRef}
@@ -197,7 +174,10 @@ export function Search() {
               }}
               onKeyDown={handleInputKeyDown}
             />
-            <kbd className={styles.kbd}>Esc</kbd>
+            {/* Clicável: no celular não há tecla Esc. */}
+            <button type="button" className={styles.close} onClick={close} aria-label="Fechar busca">
+              <kbd className={styles.kbd}>Esc</kbd>
+            </button>
           </div>
 
           <ul id={listId} role="listbox" aria-label="Resultados" className={styles.results}>
@@ -214,7 +194,7 @@ export function Search() {
                   onPointerMove={() => setActiveIndex(index)}
                   {...(item.external && { target: "_blank", rel: "noopener noreferrer" })}
                 >
-                  <span className={styles.resultType}>{item.type}</span>
+                  <span className={`label label-category ${styles.resultType}`}>{item.type}</span>
                   <span className={styles.resultTitle}>
                     <Highlighted text={item.title} ranges={item.titleMatches} />
                     {item.external && (
@@ -252,4 +232,37 @@ function Highlighted({ text, ranges }: { text: string; ranges: readonly [number,
   }
   parts.push(text.slice(cursor));
   return <>{parts}</>;
+}
+
+/**
+ * Botão que abre a busca. Separado para que o "boop" do hover re-renderize só ele, e não
+ * o diálogo inteiro com os resultados.
+ */
+function SearchTrigger({ onClick }: { onClick: () => void }) {
+  const [boopStyle, boop] = useBoop({ rotation: 15, scale: 1.1, timing: 150 });
+  return (
+    <button
+      type="button"
+      className={iconButton.button}
+      onClick={onClick}
+      onPointerEnter={boop}
+      aria-label="Buscar"
+      aria-keyshortcuts="Control+K Meta+K /"
+      title="Buscar (Ctrl K ou /)"
+    >
+      <span className={iconButton.icon} style={boopStyle}>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="6.5" />
+          <line x1="16" y1="16" x2="20.5" y2="20.5" />
+        </svg>
+      </span>
+    </button>
+  );
 }

@@ -15,6 +15,12 @@ import { NotConfiguredError } from "./visitor";
 
 type Email = { to: string; subject: string; text: string; html: string; replyTo?: string };
 
+/**
+ * O Resend recusou o pedido (4xx: endereço inválido, limite da conta…). Diferente de uma
+ * falha dele (5xx, rede): repetir o mesmo envio não adianta.
+ */
+export class EmailRejectedError extends Error {}
+
 let client: Resend | null | undefined;
 
 function getResend() {
@@ -38,7 +44,10 @@ export async function sendEmail({ to, subject, text, html, replyTo }: Email) {
   if (!from) throw new NotConfiguredError("Defina RESEND_FROM (remetente num domínio verificado no Resend).");
 
   const { error } = await resend.emails.send({ from, to, subject, text, html, replyTo });
-  if (error) throw new Error(`Resend: ${error.message}`);
+  if (error) {
+    const rejected = error.statusCode !== null && error.statusCode < 500;
+    throw new (rejected ? EmailRejectedError : Error)(`Resend: ${error.message}`);
+  }
 }
 
 /** Inscreve um e-mail já confirmado (double opt-in) nos contatos do Resend. */
@@ -53,14 +62,26 @@ export async function addNewsletterContact(email: string) {
   }
 
   const segmentId = process.env.RESEND_SEGMENT_ID;
-  const { error } = await resend.contacts.create({
+  const created = await resend.contacts.create({
     email,
     unsubscribed: false,
     segments: segmentId ? [{ id: segmentId }] : undefined,
   });
-  // Reinscrição de quem já é contato não é erro para quem está se inscrevendo.
-  if (error && !/already exists/i.test(error.message)) throw new Error(`Resend: ${error.message}`);
+  if (!created.error) return;
+  if (!isConflict(created.error)) throw new Error(`Resend: ${created.error.message}`);
+
+  // Já é contato (talvez tenha cancelado a inscrição antes): reativa e põe no segmento.
+  // Sem isso, a pessoa veria "Pronto!" e continuaria fora da lista.
+  const updated = await resend.contacts.update({ email, unsubscribed: false });
+  if (updated.error) throw new Error(`Resend: ${updated.error.message}`);
+  if (segmentId) {
+    const added = await resend.contacts.segments.add({ email, segmentId });
+    if (added.error && !isConflict(added.error)) throw new Error(`Resend: ${added.error.message}`);
+  }
 }
+
+const isConflict = (error: { message: string; statusCode: number | null }) =>
+  error.statusCode === 409 || /already exists/i.test(error.message);
 
 export function contactRecipient() {
   const to = process.env.CONTACT_TO_EMAIL;

@@ -53,9 +53,10 @@ type SandpackEditorProps = {
   height: number;
 };
 
+// bundlerTimeOut: sem acesso ao bundler (offline, adblock), o erro aparece em 10 s, não 40 s.
 export default function SandpackEditor({ files, template, activeFile, height }: SandpackEditorProps) {
   return (
-    <SandpackProvider template={template} files={files} theme={theme} options={{ activeFile, recompileDelay: 300 }}>
+    <SandpackProvider template={template} files={files} theme={theme} options={{ activeFile, recompileDelay: 300, bundlerTimeOut: 10_000 }}>
       <SandpackLayout>
         <SandpackCodeEditor showTabs showLineNumbers wrapContent style={{ height }} />
         <SandpackPreview showOpenInCodeSandbox={false} showRefreshButton style={{ height }} />

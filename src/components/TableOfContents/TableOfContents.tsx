@@ -51,7 +51,7 @@ export function TableOfContents({ headings, title = "Neste artigo" }: { headings
 
   return (
     <nav className={styles.toc} aria-labelledby={titleId}>
-      <h2 id={titleId} className={styles.title}>
+      <h2 id={titleId} className={`label ${styles.title}`}>
         {title}
       </h2>
       <ol className={styles.list}>

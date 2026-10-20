@@ -1,0 +1,269 @@
+/*
+ * --S = tamanho do sol (o mesmo clamp do avatar). Tudo da geometria é fração dele.
+ * Pilha de cada órbita (de fora para dentro), cada camada com um único papel:
+ *   .orbit   posição do centro da órbita
+ *   .layer   cópia de trás (link real, atrás do sol) ou da frente (recortada, na frente)
+ *   .plane   inclina e achata o plano (elipse)
+ *   .spin    gira (animação) + ângulo inicial e "deslize" ao parar (propriedade rotate)
+ *   .arm     raio
+ *   .counter desfaz o giro (o planeta não "rola")
+ *   .upright desfaz o achatamento e a inclinação (planeta redondo, rótulo reto)
+ */
+.system {
+  --S: clamp(13.75rem, 28vw, 20rem);
+
+  position: relative;
+  isolation: isolate;
+  width: var(--S);
+}
+
+.sun {
+  position: relative;
+  z-index: 2;
+}
+
+/* ---------- Trilhas ---------- */
+
+.trails {
+  position: absolute;
+  top: calc(var(--sun-y) * var(--S) - var(--S));
+  left: calc(var(--sun-x) * var(--S) - var(--S));
+  z-index: 0;
+  width: calc(var(--S) * 2);
+  height: calc(var(--S) * 2);
+  overflow: visible;
+  pointer-events: none;
+}
+
+.trails ellipse {
+  fill: none;
+  stroke: var(--color-accent);
+  stroke-width: 1;
+  stroke-dasharray: 2 6;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.28;
+}
+
+.trails [data-kind="m"] {
+  display: none;
+}
+
+/* ---------- Órbitas ---------- */
+
+.planets {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+}
+
+.orbit {
+  --rx: var(--rx-d);
+  --k: var(--k-d);
+  --dy: var(--dy-d);
+  --tilt: var(--tilt-d);
+  --coast-now: 0deg;
+
+  /* Sem z-index aqui: as duas camadas competem direto com o sol (mesmo contexto). */
+  position: absolute;
+  top: calc((var(--sun-y) + var(--dy)) * var(--S));
+  left: calc(var(--sun-x) * 100%);
+  width: 0;
+  height: 0;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+}
+
+/* Camada de trás (o link real): sempre atrás do sol. */
+.layer[data-kind="back"] {
+  z-index: 1;
+}
+
+/* Camada da frente: na frente do sol, mas recortada à metade de baixo do plano da órbita
+   (a mais perto de quem olha). O recorte gira junto com o plano: é fixo, não anima. */
+.layer[data-kind="front"] {
+  z-index: 3;
+}
+
+.layer[data-kind="front"] .plane {
+  clip-path: polygon(-100vmax 0, 100vmax 0, 100vmax 100vmax, -100vmax 100vmax);
+}
+
+.plane {
+  transform: rotate(var(--tilt)) scaleY(var(--k));
+}
+
+.spin {
+  rotate: calc(var(--start) + var(--coast-now));
+  animation: orbit var(--period) linear infinite;
+  /* Volta a andar acelerando aos poucos (ease-in), sem dar ré. */
+  transition: rotate var(--spring-duration) ease-in;
+}
+
+.arm {
+  transform: translateX(calc(var(--rx) * var(--S)));
+}
+
+.counter {
+  rotate: calc(-1 * (var(--start) + var(--coast-now)));
+  animation: orbit var(--period) linear infinite reverse;
+  transition: rotate var(--spring-duration) ease-in;
+}
+
+.upright {
+  transform: scaleY(calc(1 / var(--k))) rotate(calc(-1 * var(--tilt)));
+}
+
+@keyframes orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- Planetas ---------- */
+
+.planet {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  /* Área de toque maior que o planeta (mínimo confortável de 24px). */
+  width: max(1.75rem, calc(var(--size) * 2 * var(--S) + 0.75rem));
+  aspect-ratio: 1;
+  border-radius: var(--radius-full);
+  color: var(--color-text);
+  text-decoration: none;
+  translate: -50% -50%;
+  pointer-events: auto;
+}
+
+.body {
+  position: relative;
+  width: calc(var(--size) * 2 * var(--S));
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, var(--planet-a), var(--planet-b) 72%);
+  box-shadow:
+    inset -0.15em -0.2em 0.35em rgb(0 0 0 / 0.28),
+    0 0 0.6em color-mix(in srgb, var(--planet-b) 45%, transparent);
+  transition: scale var(--spring-duration) var(--ease-spring);
+}
+
+/* Anel (planeta do banco de dados). */
+.body[data-ring]::after {
+  content: "";
+  position: absolute;
+  inset: 38% -42%;
+  border: 2px solid color-mix(in srgb, var(--planet-a) 75%, transparent);
+  border-radius: 50%;
+  rotate: -16deg;
+}
+
+.label {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 50%;
+  padding: 0.15rem 0.6rem;
+  border-radius: var(--radius-full);
+  background: var(--color-text);
+  color: var(--color-bg);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  white-space: nowrap;
+  opacity: 0;
+  translate: -50% 0;
+  scale: 0.9;
+  transition:
+    opacity var(--duration-fast) var(--ease-out),
+    scale var(--spring-duration) var(--ease-spring);
+  pointer-events: none;
+}
+
+.planet:hover .body,
+.planet:focus-visible .body {
+  scale: 1.3;
+}
+
+.planet:hover .label,
+.planet:focus-visible .label {
+  opacity: 1;
+  scale: 1;
+}
+
+/* Planeta em foco/hover vem para a frente de tudo, inclusive do sol (e sem recorte). */
+.layer:has(.planet:hover, .planet:focus-visible) {
+  z-index: 4;
+}
+
+.layer:has(.planet:hover, .planet:focus-visible) .plane {
+  clip-path: none;
+}
+
+/* ---------- Parar: hover em um planeta ou foco no sistema ---------- */
+
+.system:has(.planet:hover) .orbit,
+.system:focus-within .orbit {
+  /* "Deslize": cada planeta avança um pouco além e assenta com a mola. */
+  --coast-now: var(--coast);
+}
+
+/* Foco do teclado num planeta escondido atrás do sol: meia volta até a frente (SolarFocus).
+   Ele só sobe para a frente do sol depois de chegar lá (troca única, com atraso): no
+   começo do giro ainda está atrás do rosto. */
+.system:focus-within .orbit[data-reveal] {
+  --coast-now: calc(var(--coast) + 180deg);
+}
+
+.orbit[data-reveal] .layer:has(.planet:focus-visible) {
+  transition: z-index 0s linear var(--spring-duration);
+}
+
+.system:has(.planet:hover) :is(.spin, .counter),
+.system:focus-within :is(.spin, .counter) {
+  animation-play-state: paused;
+}
+
+.system:has(.planet:hover) :is(.spin, .counter),
+.system:focus-within :is(.spin, .counter) {
+  transition: rotate var(--spring-duration) var(--ease-spring);
+}
+
+:global(:root[data-motion="paused"]) :is(.spin, .counter) {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin,
+  .counter {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* ---------- Celular: só os três primeiros, em órbitas menores ---------- */
+
+@media (max-width: 45rem) {
+  .orbit {
+    --rx: var(--rx-m);
+    --k: var(--k-m);
+    --dy: var(--dy-m);
+    --tilt: var(--tilt-m);
+  }
+
+  .orbit[data-mobile="hidden"],
+  .trails [data-mobile="hidden"],
+  .trails [data-kind="d"] {
+    display: none;
+  }
+
+  .trails [data-kind="m"] {
+    display: inline;
+  }
+}

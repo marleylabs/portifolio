@@ -1,4 +1,5 @@
 import { useId } from "react";
+import { MAX_LIKES_PER_VISITOR } from "@/lib/likes";
 import { LikeButton } from "./LikeButton";
 import styles from "./LikeSection.module.css";
 
@@ -11,7 +12,7 @@ export function LikeSection({ contentId, noun, title }: { contentId: string; nou
         {title}
       </h2>
       <p className={styles.lead}>Deixe uma curtida — ou dez. Ninguém está contando (bom, o contador está).</p>
-      <LikeButton contentId={contentId} noun={noun} />
+      <LikeButton contentId={contentId} noun={noun} max={MAX_LIKES_PER_VISITOR} />
     </section>
   );
 }

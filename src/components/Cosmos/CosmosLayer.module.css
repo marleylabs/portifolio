@@ -1,0 +1,75 @@
+.cosmos {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: var(--cosmos-star);
+  pointer-events: none;
+}
+
+/* No hero, o céu desbota para baixo e fica mais fraco atrás da coluna de texto: as
+   estrelas moram nas bordas, não embaixo do título. */
+.cosmos[data-variant="hero"] {
+  mask-image:
+    linear-gradient(to bottom, #000 55%, transparent 92%),
+    radial-gradient(34rem 22rem at 22% 52%, rgb(0 0 0 / 0.25), #000 75%);
+  mask-composite: intersect;
+}
+
+/* Na 404, céu em toda a largura da janela, atrás do "404" (o body corta o que sobrar). */
+.cosmos[data-variant="lost"] {
+  top: calc(var(--space-16) * -1);
+  left: 50%;
+  width: 100vw;
+  height: calc(100% + var(--space-16) + 6rem);
+  translate: -50% 0;
+  background:
+    radial-gradient(30rem 20rem at 50% 18%, var(--cosmos-violet), transparent 70%),
+    radial-gradient(24rem 16rem at 20% 70%, var(--cosmos-orange), transparent 70%);
+}
+
+.field {
+  opacity: 0.55;
+}
+
+.orbits ellipse {
+  fill: none;
+  stroke: var(--color-accent);
+  stroke-width: 1;
+  stroke-dasharray: 2 7;
+  opacity: 0.22;
+  vector-effect: non-scaling-stroke;
+}
+
+.twinkle {
+  fill: var(--color-sparkle);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: twinkle 3.1s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+    scale: 0.6;
+  }
+
+  50% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+:global(:root[data-motion="paused"]) .twinkle {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .twinkle {
+    animation: none;
+    opacity: 0.7;
+  }
+}

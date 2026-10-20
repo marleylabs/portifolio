@@ -5,7 +5,7 @@ import { Hero } from "@/components/Hero/Hero";
 import { PopularList } from "@/components/PopularList/PopularList";
 import { PostCard } from "@/components/PostCard/PostCard";
 import { ProjectCard } from "@/components/ProjectCard/ProjectCard";
-import { getAllArticles, getArticleCategories, getFeaturedProjects, getPopular } from "@/lib/content";
+import { getAllArticles, getArticleCategories, getFeaturedProjects, getHighlights } from "@/lib/content";
 import { jsonLd, pageMetadata } from "@/lib/metadata";
 import { site } from "@/lib/site";
 import listing from "./listing.module.css";
@@ -14,11 +14,11 @@ import styles from "./page.module.css";
 export const metadata: Metadata = pageMetadata({ description: site.description, path: "/" });
 
 export default async function HomePage() {
-  const [articles, featured, categories, popular] = await Promise.all([
+  const [articles, featured, categories, highlights] = await Promise.all([
     getAllArticles(),
     getFeaturedProjects({ limit: 3 }),
     getArticleCategories(),
-    getPopular({ limit: 5 }),
+    getHighlights({ limit: 5 }),
   ]);
 
   return (
@@ -71,16 +71,16 @@ export default async function HomePage() {
 
             <aside className={styles.sidebar} aria-label="Explorar artigos">
               <section aria-labelledby="categorias-title">
-                <h2 id="categorias-title" className={styles.sidebarTitle}>
+                <h2 id="categorias-title" className={`label ${styles.sidebarTitle}`}>
                   Navegar por categoria
                 </h2>
                 <CategoryNav categories={categories} className={styles.sidebarNav} />
               </section>
-              <section aria-labelledby="populares-title">
-                <h2 id="populares-title" className={styles.sidebarTitle}>
-                  Mais populares
+              <section aria-labelledby="destaques-title">
+                <h2 id="destaques-title" className={`label ${styles.sidebarTitle}`}>
+                  Destaques
                 </h2>
-                <PopularList articles={popular} />
+                <PopularList articles={highlights} />
               </section>
             </aside>
           </div>

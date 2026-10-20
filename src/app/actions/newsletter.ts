@@ -1,10 +1,10 @@
 "use server";
 
-import { addNewsletterContact, escapeHtml, sendEmail } from "@/lib/email";
+import { EmailRejectedError, addNewsletterContact, escapeHtml, sendEmail } from "@/lib/email";
 import { fieldErrors, newsletterSchema, validate, type FormState } from "@/lib/forms";
 import { createNewsletterToken, readNewsletterToken } from "@/lib/newsletter-token";
 import { site } from "@/lib/site";
-import { rateLimit } from "@/lib/rate-limit";
+import { rateLimit, refundRateLimit } from "@/lib/rate-limit";
 import { NotConfiguredError, hashVisitor } from "@/lib/visitor";
 import { allowSubmission, looksLikeBot } from "./spam";
 
@@ -25,22 +25,32 @@ export async function subscribeToNewsletter(_: NewsletterState, formData: FormDa
   if (!parsed.success) return { status: "error", errors: fieldErrors(parsed.error), values };
 
   try {
-    if (!(await allowSubmission("newsletter", 5, 60 * 60))) {
-      return { status: "error", message: "Muitas tentativas. Tente de novo mais tarde.", values };
+    const refund = await allowSubmission("newsletter", 5, 60 * 60);
+    if (!refund) {
+      return { status: "error", message: "Muitas tentativas. O envio volta a funcionar em até uma hora.", values };
     }
     // Por e-mail também: impede usar o formulário para encher a caixa de alguém
     // (trocando de IP). O excedente é ignorado em silêncio.
-    if (!(await rateLimit("newsletter-email", hashVisitor(parsed.data.email.toLowerCase()), 2, 24 * 60 * 60))) {
+    const recipient = hashVisitor(parsed.data.email.toLowerCase());
+    if (!(await rateLimit("newsletter-email", recipient, 2, 24 * 60 * 60))) {
       return success;
     }
 
     const link = `${site.url}/newsletter/confirmar?token=${createNewsletterToken(parsed.data.email)}`;
-    await sendEmail({
-      to: parsed.data.email,
-      subject: `Confirme sua inscrição — ${site.name}`,
-      text: `Oi!\n\nPara receber os novos artigos de ${site.name}, confirme sua inscrição:\n${link}\n\nO link vale por 3 dias. Se não foi você, ignore este e-mail: nada acontece sem a confirmação.`,
-      html: `<p>Oi!</p><p>Para receber os novos artigos de ${escapeHtml(site.name)}, confirme sua inscrição:</p><p><a href="${escapeHtml(link)}">Confirmar inscrição</a></p><p>O link vale por 3 dias. Se não foi você, ignore este e-mail: nada acontece sem a confirmação.</p>`,
-    });
+    try {
+      await sendEmail({
+        to: parsed.data.email,
+        subject: `Confirme sua inscrição — ${site.name}`,
+        text: `Oi!\n\nPara receber os novos artigos de ${site.name}, confirme sua inscrição:\n${link}\n\nO link vale por 3 dias. Se não foi você, ignore este e-mail: nada acontece sem a confirmação.`,
+        html: `<p>Oi!</p><p>Para receber os novos artigos de ${escapeHtml(site.name)}, confirme sua inscrição:</p><p><a href="${escapeHtml(link)}">Confirmar inscrição</a></p><p>O link vale por 3 dias. Se não foi você, ignore este e-mail: nada acontece sem a confirmação.</p>`,
+      });
+    } catch (cause) {
+      // O e-mail não saiu por falha nossa: nenhuma das duas tentativas conta (veja contact.ts).
+      if (!(cause instanceof EmailRejectedError)) {
+        await Promise.all([refund(), refundRateLimit("newsletter-email", recipient)]).catch(() => {});
+      }
+      throw cause;
+    }
     return success;
   } catch (cause) {
     console.error("[newsletter] falha ao enviar confirmação", cause);

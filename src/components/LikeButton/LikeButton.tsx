@@ -7,7 +7,6 @@ import { Odometer } from "./Odometer";
 import { burst, shake, squashAndStretch } from "./particles";
 import styles from "./LikeButton.module.css";
 
-const MAX = 10;
 const FLUSH_DELAY = 600;
 const HEART_PATH =
   "M12 21s-7.4-4.5-9.5-9.2C.9 8.3 3.1 4.6 6.9 4.6c2.1 0 3.6 1.2 5.1 3 1.5-1.8 3-3 5.1-3 3.8 0 6 3.7 4.4 7.2C19.4 16.5 12 21 12 21Z";
@@ -20,6 +19,8 @@ type LikeButtonProps = {
   contentId: string;
   /** Para os textos: "artigo", "estudo de caso"… */
   noun: string;
+  /** Limite por visitante; vem do servidor (lib/likes), que é quem o aplica. */
+  max: number;
 };
 
 /**
@@ -32,7 +33,7 @@ type LikeButtonProps = {
  * - Movimento reduzido: sem partículas nem squash; o coração ainda enche (mudança de
  *   cor, não movimento) e o som continua.
  */
-export function LikeButton({ contentId, noun }: LikeButtonProps) {
+export function LikeButton({ contentId, noun, max: MAX }: LikeButtonProps) {
   const [state, setState] = useState<LikeState | null>(null);
   const [status, setStatus] = useState<Status>("loading");
   const [announcement, setAnnouncement] = useState("");
@@ -43,6 +44,7 @@ export function LikeButton({ contentId, noun }: LikeButtonProps) {
   const particlesRef = useRef<HTMLSpanElement>(null);
   const mineRef = useRef(0);
   const pendingRef = useRef(0);
+  const inFlightRef = useRef(false);
   const timerRef = useRef(0);
   const clipId = `${useId()}-heart`;
 
@@ -79,10 +81,13 @@ export function LikeButton({ contentId, noun }: LikeButtonProps) {
     [contentId],
   );
 
-  const flush = useCallback(async () => {
+  // Um envio por vez: com dois em voo, a resposta mais antiga podia chegar por último e
+  // fazer o total "voltar". Cliques feitos durante o envio saem logo depois dele.
+  const flush = useCallback(async function flushPending(): Promise<void> {
     const count = pendingRef.current;
-    if (count === 0) return;
+    if (count === 0 || inFlightRef.current) return;
     pendingRef.current = 0;
+    inFlightRef.current = true;
     try {
       const response = await send(count);
       if (!response.ok) throw new Error(String(response.status));
@@ -95,7 +100,10 @@ export function LikeButton({ contentId, noun }: LikeButtonProps) {
       mineRef.current -= count;
       setState((current) => current && { total: current.total - count, mine: current.mine - count });
       setAnnouncement("Não foi possível registrar a curtida. Tente de novo.");
+    } finally {
+      inFlightRef.current = false;
     }
+    if (pendingRef.current > 0) await flushPending();
   }, [send]);
 
   // Saindo da página (ou desmontando) com cliques pendentes: envia com keepalive.
@@ -146,7 +154,7 @@ export function LikeButton({ contentId, noun }: LikeButtonProps) {
       ? "Curtidas indisponíveis no momento"
       : status === "loading" || !state
         ? `Curtir este ${noun}`
-        : `Curtir este ${noun}. ${state.total} ${state.total === 1 ? "curtida" : "curtidas"}; você curtiu ${mine} de ${MAX} vezes.`;
+        : `Curtir este ${noun}. ${state.total} ${state.total === 1 ? "curtida" : "curtidas"}; você deu ${mine} de ${MAX} curtidas.`;
 
   return (
     <div className={styles.wrapper} data-status={status}>

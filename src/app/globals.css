@@ -21,6 +21,8 @@ html {
 body {
   margin: 0;
   min-height: 100dvh;
+  /* Corta o que passar da largura da janela (o céu da 404) sem criar barra de rolagem. */
+  overflow-x: clip;
   display: flex;
   flex-direction: column;
   background: var(--color-bg);
@@ -199,7 +201,8 @@ a:hover {
   position: absolute;
   top: var(--space-2);
   left: var(--space-2);
-  z-index: 100;
+  /* Acima do header (mesma camada de empilhamento): senão o logo o cobre. */
+  z-index: calc(var(--z-header) + 1);
   padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-sm);
   background: var(--color-primary);
@@ -226,6 +229,25 @@ a:hover {
 }
 
 /* Selo para conteúdo de exemplo (ex.: itens da página Sobre a substituir). */
+/*
+ * Rótulo em caixa alta (sobretítulos, categorias, títulos de coluna). :where() deixa a
+ * especificidade em zero: o módulo de cada componente ajusta margem e tamanho sem brigar
+ * com a ordem do CSS. .label-category: cor de categoria.
+ */
+:where(.label) {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+:where(.label-category) {
+  color: var(--color-secondary);
+}
+
 .example-badge {
   display: inline-block;
   margin-left: var(--space-2);
@@ -235,8 +257,60 @@ a:hover {
   background: var(--color-warning-bg);
   color: var(--color-text);
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: var(--text-2xs);
   font-weight: 600;
   letter-spacing: 0.02em;
   vertical-align: middle;
+}
+
+/* ---------- View transitions: filtro de /projetos ----------
+ * Classes aplicadas pelo <ViewTransition> do ProjectExplorer (só em transições do tipo
+ * "filtro-projetos"). Mesma mola do resto do site: --ease-spring / --spring-duration.
+ */
+::view-transition-group(.project-move),
+::view-transition-group(.project-enter),
+::view-transition-group(.project-exit) {
+  animation-duration: var(--spring-duration);
+  animation-timing-function: var(--ease-spring);
+}
+
+/* Card que só mudou de lugar: o conteúdo é o mesmo, então nada de "fantasma" cruzando. */
+::view-transition-old(.project-move) {
+  animation: none;
+  opacity: 0;
+}
+
+::view-transition-new(.project-move) {
+  animation: none;
+}
+
+::view-transition-new(.project-enter) {
+  animation: project-enter var(--spring-duration) var(--ease-spring) both;
+}
+
+::view-transition-old(.project-exit) {
+  animation: project-exit var(--duration-base) var(--ease-out) both;
+}
+
+@keyframes project-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+
+@keyframes project-exit {
+  to {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
 }

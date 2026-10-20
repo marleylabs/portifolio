@@ -1,6 +1,6 @@
 "use client";
 
-import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import type { PlaygroundTemplate } from "./SandpackEditor";
 import styles from "./Playground.module.css";
 
@@ -39,8 +39,10 @@ export function PlaygroundClient({ files, template, activeFile, height, title, c
     return () => observer.disconnect();
   }, []);
 
+  // Mesma altura do editor: sem isso, a prévia (o arquivo inteiro) era bem mais alta e o
+  // texto abaixo "pulava" para cima quando o editor terminava de carregar.
   const fallback = (
-    <div className={styles.fallback}>
+    <div className={styles.fallback} style={{ "--editor-height": `${height}px` } as CSSProperties}>
       {children}
       <p className={styles.loading}>{isNear ? "Carregando o editor ao vivo…" : "Editor ao vivo carrega ao chegar aqui."}</p>
     </div>
@@ -48,7 +50,7 @@ export function PlaygroundClient({ files, template, activeFile, height, title, c
 
   return (
     <section ref={containerRef} className={styles.playground} aria-label={title ? `Playground: ${title}` : "Playground de código"}>
-      {title && <p className={styles.title}>{title}</p>}
+      {title && <p className={`label ${styles.title}`}>{title}</p>}
       {isNear ? (
         <Suspense fallback={fallback}>
           <SandpackEditor files={files} template={template} activeFile={activeFile} height={height} />

@@ -49,7 +49,7 @@ export async function Footer() {
 
           <nav className={styles.columns} aria-label="Rodapé">
             <div>
-              <h2 className={styles.columnTitle}>Categorias</h2>
+              <h2 className={`label ${styles.columnTitle}`}>Categorias</h2>
               <ul className={styles.columnList}>
                 {categories.map(({ key, label }) => (
                   <li key={key}>
@@ -62,7 +62,7 @@ export async function Footer() {
               </ul>
             </div>
             <div>
-              <h2 className={styles.columnTitle}>Projetos</h2>
+              <h2 className={`label ${styles.columnTitle}`}>Projetos</h2>
               <ul className={styles.columnList}>
                 {projects.slice(0, 4).map((project) => (
                   <li key={project.id}>
@@ -77,7 +77,7 @@ export async function Footer() {
               </ul>
             </div>
             <div>
-              <h2 className={styles.columnTitle}>Geral</h2>
+              <h2 className={`label ${styles.columnTitle}`}>Geral</h2>
               <ul className={styles.columnList}>
                 {GENERAL.map(({ href, label }) => (
                   <li key={href}>

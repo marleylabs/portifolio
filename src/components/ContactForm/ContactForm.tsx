@@ -9,6 +9,7 @@ import { CONTACT_TOPICS, contactSchema, fieldErrors, validate as validateSchema,
 import styles from "./ContactForm.module.css";
 
 const FIELD_ORDER: ContactFields[] = ["name", "email", "topic", "message"];
+const FIELD_LABELS: Record<ContactFields, string> = { name: "Nome", email: "E-mail", topic: "Assunto", message: "Mensagem" };
 const MESSAGE_MAX = 5000;
 
 /** Envolve o formulário: "Enviar outra mensagem" remonta tudo (zera o estado da action). */
@@ -22,6 +23,9 @@ function ContactFormInner({ onReset }: { onReset: () => void }) {
   const [clientErrors, setClientErrors] = useState<FieldErrors<ContactFields>>({});
   const [touched, setTouched] = useState<Partial<Record<ContactFields, boolean>>>({});
   const [messageLength, setMessageLength] = useState(state.values?.message?.length ?? 0);
+  // O erro aparece quando o leitor já saiu do campo: sem anúncio, quem usa leitor de tela
+  // só descobriria ao enviar.
+  const [announcement, setAnnouncement] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
   const playSound = useSoundEffect();
   const baseId = useId();
@@ -55,7 +59,8 @@ function ContactFormInner({ onReset }: { onReset: () => void }) {
 
   function handleBlur(field: ContactFields) {
     setTouched((current) => ({ ...current, [field]: true }));
-    validate([field]);
+    const error = validate([field])[field];
+    setAnnouncement(error ? `${FIELD_LABELS[field]}: ${error}` : "");
   }
 
   function handleChange(field: ContactFields) {
@@ -121,6 +126,7 @@ function ContactFormInner({ onReset }: { onReset: () => void }) {
             type="email"
             className={forms.input}
             autoComplete="email"
+            spellCheck={false}
             required
             defaultValue={state.values?.email}
             aria-invalid={errors.email ? true : undefined}
@@ -188,6 +194,10 @@ function ContactFormInner({ onReset }: { onReset: () => void }) {
       </div>
 
       <SpamTrap />
+
+      <p className="visually-hidden" aria-live="polite">
+        {announcement}
+      </p>
 
       <div className={styles.actions}>
         <button type="submit" className={forms.submit} disabled={isPending}>

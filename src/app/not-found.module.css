@@ -1,4 +1,7 @@
+/* Relativo e isolado: o céu (CosmosLayer) fica atrás do conteúdo, em toda a largura. */
 .container {
+  position: relative;
+  isolation: isolate;
   display: grid;
   justify-items: center;
   max-width: 44rem;

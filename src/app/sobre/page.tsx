@@ -11,13 +11,15 @@ import styles from "./page.module.css";
 
 export const metadata: Metadata = pageMetadata({
   title: "Sobre",
-  description: `Quem é ${site.name}, por onde passou e com que tecnologias trabalha hoje.`,
+  description: `Quem é ${site.name} e com que tecnologias trabalha hoje.`,
   path: "/sobre",
 });
 
 /** Conteúdo em content/pages/sobre.mdx (texto no corpo; foto, linha do tempo e stack no frontmatter). */
 export default async function AboutPage() {
   const about = await getAboutPage();
+  // Itens de exemplo da linha do tempo não vão ao ar: sem itens reais, a seção some.
+  const timeline = about.timeline.filter((item) => !item.example);
 
   return (
     <div className={styles.container}>
@@ -34,12 +36,14 @@ export default async function AboutPage() {
         <AboutPhoto photo={about.photo} />
       </section>
 
-      <section className={styles.section} aria-labelledby="trajetoria">
-        <h2 id="trajetoria" className={styles.sectionTitle}>
-          Trajetória
-        </h2>
-        <Timeline items={about.timeline} />
-      </section>
+      {timeline.length > 0 && (
+        <section className={styles.section} aria-labelledby="trajetoria">
+          <h2 id="trajetoria" className={styles.sectionTitle}>
+            Trajetória
+          </h2>
+          <Timeline items={timeline} />
+        </section>
+      )}
 
       <section className={styles.section} aria-labelledby="stack-atual">
         <h2 id="stack-atual" className={styles.sectionTitle}>

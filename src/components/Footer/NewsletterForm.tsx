@@ -4,12 +4,14 @@ import { useActionState, useId, useRef, useState, type FormEvent } from "react";
 import { subscribeToNewsletter, type NewsletterState } from "@/app/actions/newsletter";
 import { SpamTrap } from "@/components/Forms/SpamTrap";
 import forms from "@/components/Forms/Forms.module.css";
-import { newsletterSchema, validate } from "@/lib/forms";
+import { EMAIL_MAX_LENGTH, EMAIL_MESSAGES, hasDottedDomain } from "@/lib/form-fields";
 import styles from "./Footer.module.css";
 
 /**
  * Inscrição na newsletter (passo 1 do double opt-in). Funciona sem JavaScript (Server
- * Action); com JS, valida antes de enviar usando o mesmo schema do servidor.
+ * Action); com JS, valida antes de enviar com a validação nativa do campo e as mesmas
+ * mensagens do servidor. O schema (zod) fica só no servidor: este formulário está no
+ * rodapé de todas as páginas e não deve levar o zod junto.
  */
 export function NewsletterForm() {
   const [state, formAction, isPending] = useActionState<NewsletterState, FormData>(subscribeToNewsletter, {
@@ -21,14 +23,21 @@ export function NewsletterForm() {
   const errorId = useId();
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    const result = validate(newsletterSchema, { email: inputRef.current?.value ?? "" });
-    if (result.success) {
-      setClientError(null);
-      return;
-    }
+    const input = inputRef.current;
+    if (!input) return;
+    input.value = input.value.trim();
+    const { valueMissing, tooLong, typeMismatch } = input.validity;
+    const message = valueMissing
+      ? EMAIL_MESSAGES.required
+      : tooLong
+        ? EMAIL_MESSAGES.tooLong
+        : typeMismatch || !hasDottedDomain(input.value)
+          ? EMAIL_MESSAGES.invalid
+          : null;
+    setClientError(message);
+    if (!message) return; // o servidor ainda confere com o schema completo
     event.preventDefault();
-    setClientError(result.error.issues[0].message);
-    inputRef.current?.focus();
+    input.focus();
   }
 
   if (state.status === "success") {
@@ -58,6 +67,8 @@ export function NewsletterForm() {
           name="email"
           required
           autoComplete="email"
+          spellCheck={false}
+          maxLength={EMAIL_MAX_LENGTH}
           placeholder="voce@exemplo.com"
           defaultValue={state.values?.email}
           aria-invalid={error ? true : undefined}
@@ -66,7 +77,7 @@ export function NewsletterForm() {
         />
         <button type="submit" className={forms.submit} disabled={isPending}>
           {isPending && <span className={forms.spinner} aria-hidden="true" />}
-          {isPending ? "Enviando…" : "Inscrever"}
+          {isPending ? "Enviando…" : "Quero receber"}
         </button>
       </div>
       {error && (

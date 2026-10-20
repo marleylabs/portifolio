@@ -41,8 +41,10 @@ function readPlaygroundDir(dir: string) {
   if (!/^[a-z0-9-]+$/.test(dir)) throw new Error(`<Playground dir="${dir}">: use só minúsculas, números e hífens.`);
   const absolute = path.join(PLAYGROUNDS_DIR, dir);
   return Object.fromEntries(
-    readdirSync(absolute)
-      .filter((name) => !name.startsWith("."))
+    readdirSync(absolute, { withFileTypes: true })
+      // Só arquivos: uma subpasta faria o readFileSync quebrar o build com EISDIR.
+      .filter((entry) => entry.isFile() && !entry.name.startsWith("."))
+      .map((entry) => entry.name)
       .sort()
       .map((name) => [`/${name}`, readFileSync(path.join(absolute, name), "utf8")]),
   );

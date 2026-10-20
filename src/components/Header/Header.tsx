@@ -1,3 +1,4 @@
+import { MotionToggle } from "@/components/MotionToggle/MotionToggle";
 import { Search } from "@/components/Search/Search";
 import { SoundToggle } from "@/components/SoundToggle/SoundToggle";
 import { ThemeToggle } from "@/components/ThemeToggle/ThemeToggle";
@@ -19,9 +20,10 @@ export function Header() {
 
         <div className={styles.actions}>
           <Search />
-          {/* No mobile, o botão de som vai para dentro do drawer para caber tudo. */}
+          {/* No mobile, som e pausa vão para dentro do drawer para caber tudo. */}
           <span className={styles.desktopOnly}>
             <SoundToggle />
+            <MotionToggle />
           </span>
           <ThemeToggle />
           <MobileNav />

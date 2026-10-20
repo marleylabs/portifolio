@@ -81,7 +81,7 @@
   transition:
     var(--transition-colors),
     transform var(--spring-duration) var(--ease-spring);
-  transition-delay: 150ms;
+  transition-delay: var(--duration-fast);
 }
 
 /* Enquanto a etapa está escondida, o marcador fica "murcho"; ao revelar, estala com a mola. */
@@ -177,5 +177,5 @@
 }
 
 .stackNote {
-  font-size: 0.8125rem;
+  font-size: var(--text-xs);
 }

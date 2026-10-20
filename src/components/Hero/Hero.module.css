@@ -8,17 +8,11 @@
    */
   margin-top: calc(var(--header-height) * -1);
   padding: calc(var(--header-height) + clamp(3rem, 8vw, 6rem)) var(--gutter) clamp(9rem, 18vw, 15rem);
+  /* Brilhos de nebulosa: violeta em cima à direita, laranja à esquerda e um eco atrás do mascote. */
   background:
-    radial-gradient(
-      60rem 30rem at 85% 10%,
-      color-mix(in srgb, var(--color-accent) 12%, transparent),
-      transparent 70%
-    ),
-    radial-gradient(
-      50rem 28rem at 10% 30%,
-      color-mix(in srgb, var(--color-primary) 10%, transparent),
-      transparent 70%
-    );
+    radial-gradient(42rem 26rem at 82% 8%, var(--cosmos-violet), transparent 70%),
+    radial-gradient(36rem 24rem at 6% 36%, var(--cosmos-orange), transparent 70%),
+    radial-gradient(22rem 18rem at 78% 46%, var(--cosmos-violet), transparent 72%);
 }
 
 .inner {
@@ -51,35 +45,33 @@
 
 .title {
   margin: 0;
-  font-size: clamp(2.75rem, 1.6rem + 4.6vw, 5.25rem);
+  font-size: var(--text-display);
   font-weight: 800;
   letter-spacing: -0.035em;
   line-height: 1.02;
 }
 
-/* Nome em gradiente: as duas pontas (primary e accent) passam AA sobre o fundo. */
+/* Nome na cor da marca, sólida (o texto em gradiente era o cacoete de template mais visível). */
 .name {
-  background: linear-gradient(100deg, var(--color-primary), var(--color-accent));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  /* Sem suporte a background-clip: text, cai para a cor primária. */
-  -webkit-text-fill-color: transparent;
-}
-
-@supports not ((background-clip: text) or (-webkit-background-clip: text)) {
-  .name {
-    color: var(--color-primary);
-    -webkit-text-fill-color: currentColor;
-  }
+  color: var(--color-primary);
 }
 
 .subtitle {
   max-width: 34ch;
   margin: var(--space-6) 0 0;
   color: var(--color-text-muted);
-  font-size: var(--text-xl);
+  font-size: var(--text-lg);
   line-height: 1.5;
+}
+
+@media (min-width: 56rem) {
+  .subtitle {
+    font-size: var(--text-xl);
+  }
+}
+
+.nowrap {
+  white-space: nowrap;
 }
 
 .highlight {
@@ -104,37 +96,14 @@
   height: clamp(9rem, 18vw, 16rem);
 }
 
+/* Ondas paradas: no hero, quem se mexe é o sistema solar; as ondas são só fundo. */
 .wave {
   transform-box: view-box;
-  will-change: transform;
-  animation: float 11s ease-in-out infinite alternate;
 }
 
-.wave[data-layer="back"] {
-  animation-duration: 14s;
-  animation-delay: -3s;
-}
 
-.wave[data-layer="middle"] {
-  animation-duration: 10s;
-  animation-direction: alternate-reverse;
-}
 
-.wave[data-layer="front"] {
-  animation-duration: 12.5s;
-  animation-delay: -6s;
-}
 
-/* Flutuação lenta: deriva lateral + sobe e desce. A folga lateral vem do overscan. */
-@keyframes float {
-  from {
-    transform: translate3d(-36px, 6px, 0);
-  }
-
-  to {
-    transform: translate3d(36px, -10px, 0);
-  }
-}
 
 .waveFloor {
   fill: var(--color-bg);

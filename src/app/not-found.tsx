@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CosmosLayer } from "@/components/Cosmos/CosmosLayer";
 import { NotFoundArt } from "@/components/NotFound/NotFoundArt";
 import { OpenSearchButton } from "@/components/NotFound/OpenSearchButton";
 import { PushButton } from "@/components/PushButton/PushButton";
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
 export default function NotFound() {
   return (
     <div className={styles.container}>
+      <CosmosLayer variant="lost" />
       <NotFoundArt />
       <h1 className={styles.title}>Essa página saiu para dar uma volta</h1>
       <p className={styles.lead}>

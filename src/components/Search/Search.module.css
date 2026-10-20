@@ -107,13 +107,31 @@
   display: none;
 }
 
+/* Botão "Esc": área de toque de 44px; o desenho de tecla fica no <kbd> de dentro. */
+.close {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  margin: calc(var(--space-2) * -1) 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.close:hover {
+  color: var(--color-text);
+}
+
 .kbd {
   padding: 0.1em 0.5em;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  color: var(--color-text-muted);
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--text-2xs);
 }
 
 /* ---------- Resultados ---------- */
@@ -150,11 +168,7 @@
 }
 
 .resultType {
-  color: var(--color-secondary);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-size: var(--text-2xs);
 }
 
 .resultTitle {
@@ -185,7 +199,7 @@
 
 .resultTitle mark {
   padding: 0 0.1em;
-  border-radius: 3px;
+  border-radius: var(--radius-xs);
   background: var(--color-highlight);
   color: inherit;
 }

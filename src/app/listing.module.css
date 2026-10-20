@@ -33,7 +33,7 @@
   list-style: none;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 45rem) {
   .postList {
     margin-inline: calc(var(--gutter) * -1);
   }

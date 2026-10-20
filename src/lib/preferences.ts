@@ -1,7 +1,7 @@
 /*
- * Preferências do visitante (tema e som).
+ * Preferências do visitante (tema, som e animações).
  *
- * A fonte da verdade é o atributo no <html> (data-theme / data-sound), definido por um
+ * A fonte da verdade é o atributo no <html> (data-theme / data-sound / data-motion), definido por um
  * script inline antes da primeira pintura. O CSS reage a esse atributo, então não há
  * flash; os componentes React apenas leem/escrevem o mesmo atributo.
  */
@@ -10,9 +10,12 @@ import { prefersReducedMotion } from "./reduced-motion";
 
 export type Theme = "light" | "dark";
 export type SoundSetting = "on" | "off";
+/** "paused": animações contínuas (órbitas, respiração, estrelinhas, piscadas) param. */
+export type MotionSetting = "on" | "paused";
 
 export const THEME_KEY = "theme";
 export const SOUND_KEY = "sound";
+export const MOTION_KEY = "motion";
 
 export const THEME_TRANSITION_CLASS = "theme-transition";
 
@@ -24,7 +27,7 @@ export const THEME_TRANSITION_CLASS = "theme-transition";
  * de fundo resolvida dos tokens: os stylesheets do <head> bloqueiam scripts, então o
  * CSS já está aplicado aqui e nenhuma cor precisa ser repetida em JS.
  */
-export const preferencesScript = `(function(){var d=document.documentElement,t=null,s=null;try{t=localStorage.getItem("${THEME_KEY}");s=localStorage.getItem("${SOUND_KEY}")}catch(e){}if(t!=="light"&&t!=="dark"){t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}d.setAttribute("data-theme",t);d.setAttribute("data-sound",s==="off"?"off":"on");var m=document.querySelector('meta[name="theme-color"]');if(!m){m=document.createElement("meta");m.name="theme-color";document.head.appendChild(m)}m.content=getComputedStyle(d).backgroundColor})()`;
+export const preferencesScript = `(function(){var d=document.documentElement,t=null,s=null,a=null;try{t=localStorage.getItem("${THEME_KEY}");s=localStorage.getItem("${SOUND_KEY}");a=localStorage.getItem("${MOTION_KEY}")}catch(e){}if(a!=="on"&&a!=="paused"){a=matchMedia("(prefers-reduced-motion: reduce)").matches?"paused":"on"}d.setAttribute("data-motion",a);if(t!=="light"&&t!=="dark"){t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}d.setAttribute("data-theme",t);d.setAttribute("data-sound",s==="off"?"off":"on");var m=document.querySelector('meta[name="theme-color"]');if(!m){m=document.createElement("meta");m.name="theme-color";document.head.appendChild(m)}m.content=getComputedStyle(d).backgroundColor})()`;
 
 export function readStoredTheme(): Theme | null {
   try {
@@ -93,6 +96,15 @@ export function applySound(setting: SoundSetting) {
   document.documentElement.setAttribute("data-sound", setting);
   try {
     localStorage.setItem(SOUND_KEY, setting);
+  } catch {
+    // Idem: vale só para esta visita.
+  }
+}
+
+export function applyMotion(setting: MotionSetting) {
+  document.documentElement.setAttribute("data-motion", setting);
+  try {
+    localStorage.setItem(MOTION_KEY, setting);
   } catch {
     // Idem: vale só para esta visita.
   }

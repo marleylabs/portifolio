@@ -47,7 +47,12 @@ const pairs = [
   ["color-on-primary", "color-primary", 4.5],
   ["color-on-primary", "color-primary-hover", 4.5],
   ["color-secondary", "color-bg", 4.5],
+  // Categorias (secondary) ficam sobre o card e sobre o fundo do card em hover.
+  ["color-secondary", "color-surface", 4.5],
+  ["color-secondary", "color-surface-muted", 4.5],
   ["color-accent", "color-bg", 4.5],
+  ["color-accent", "color-surface", 4.5],
+  ["color-accent", "color-surface-muted", 4.5],
   ["color-text", "color-highlight", 4.5],
   ["color-text", "color-selection", 4.5],
   ["color-text", "color-info-bg", 4.5],

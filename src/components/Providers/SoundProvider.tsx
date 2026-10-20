@@ -33,6 +33,12 @@ export function SoundProvider({ children }: { children: ReactNode }) {
   const [armed, setArmed] = useState(false);
   const howlRef = useRef<Howl | null>(null);
   const queuedRef = useRef<{ name: SoundName; rate: number; at: number } | null>(null);
+  // Lido dentro do callback: assim playSound nunca muda de identidade e ligar/desligar
+  // o som não re-renderiza todos os componentes que tocam sons.
+  const soundRef = useRef(sound);
+  useEffect(() => {
+    soundRef.current = sound;
+  }, [sound]);
 
   // Arma o áudio no primeiro gesto (se o som estiver ligado).
   useEffect(() => {
@@ -65,7 +71,7 @@ export function SoundProvider({ children }: { children: ReactNode }) {
 
   const playSound = useCallback<PlaySound>(
     (name, options) => {
-      if (sound !== "on" && !options?.force) return;
+      if (soundRef.current !== "on" && !options?.force) return;
       const rate = options?.playbackRate ?? 1;
       if (howlRef.current) {
         playNow(howlRef.current, name, rate);
@@ -75,7 +81,7 @@ export function SoundProvider({ children }: { children: ReactNode }) {
       queuedRef.current = { name, rate, at: performance.now() };
       setArmed(true);
     },
-    [sound, playNow],
+    [playNow],
   );
 
   return (

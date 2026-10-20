@@ -21,6 +21,8 @@
   border-radius: var(--radius-full);
   background: var(--color-surface);
   color: var(--color-text);
+  /* Mesmas regras do filtro de projetos (ver ProjectExplorer.module.css). */
+  font-family: var(--font-mono);
   font-size: var(--text-sm);
   font-weight: 600;
   text-decoration: none;
@@ -43,7 +45,7 @@
 
 .count {
   color: var(--color-text-muted);
-  font-size: 0.8125rem;
+  font-size: var(--text-xs);
   font-weight: 700;
 }
 

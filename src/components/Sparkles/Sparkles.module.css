@@ -22,10 +22,24 @@
   animation: spin calc(var(--sparkle-lifetime) * 1.4) linear;
 }
 
-/* Movimento reduzido: estrelas fixas, visíveis e sem animação. */
-.wrapper[data-static="true"] .sparkle,
-.wrapper[data-static="true"] .sparkle svg {
+/* Estrelas fixas: sempre no HTML, visíveis só com movimento reduzido ou pausado. */
+.static,
+.static svg {
   animation: none;
+}
+
+.static {
+  display: none;
+}
+
+:global(:root[data-motion="paused"]) .static {
+  display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .static {
+    display: block;
+  }
 }
 
 @keyframes come-in-out {

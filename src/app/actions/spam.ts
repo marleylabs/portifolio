@@ -2,7 +2,7 @@ import "server-only";
 
 import { headers } from "next/headers";
 import { HONEYPOT_FIELD, MIN_FILL_MS } from "@/lib/forms";
-import { rateLimit } from "@/lib/rate-limit";
+import { rateLimit, refundRateLimit } from "@/lib/rate-limit";
 import { clientIp, hashVisitor } from "@/lib/visitor";
 
 /**
@@ -19,7 +19,14 @@ export function looksLikeBot(formData: FormData) {
   return Number.isFinite(startedAt) && startedAt > 0 && Date.now() - startedAt < MIN_FILL_MS;
 }
 
+/**
+ * Conta um envio do visitante. Devolve null se ele passou do limite; senão, uma função
+ * que desfaz a contagem (para quando o envio falha por culpa nossa, não dele).
+ */
 export async function allowSubmission(bucket: string, limit: number, windowSeconds: number) {
-  const visitor = hashVisitor(clientIp(await headers()));
-  return rateLimit(bucket, visitor, limit, windowSeconds);
+  const ip = clientIp(await headers());
+  if (!ip) throw new Error("Pedido sem IP do cliente: confira o proxy.");
+  const visitor = hashVisitor(ip);
+  if (!(await rateLimit(bucket, visitor, limit, windowSeconds))) return null;
+  return () => refundRateLimit(bucket, visitor);
 }

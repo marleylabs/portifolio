@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createHash } from "node:crypto";
+import { isIPv6 } from "node:net";
 
 export class NotConfiguredError extends Error {}
 
@@ -15,9 +16,30 @@ export function hashVisitor(ip: string) {
 }
 
 /**
- * IP do cliente. Na Vercel, x-forwarded-for é definido pela própria plataforma (não dá
- * para o visitante forjar). Em outro host, confirme que o proxy sobrescreve o cabeçalho.
+ * Endereço do visitante para limites e curtidas, ou null se o pedido não trouxer IP.
+ *
+ * Na Vercel, x-forwarded-for é sempre definido pela plataforma, que sobrescreve o valor
+ * enviado pelo cliente (não dá para forjar). Em outro host, confirme que o proxy faz o
+ * mesmo. Sem IP, em produção, o pedido é recusado em vez de cair num balde comum que
+ * todos dividiriam; em dev, vira "local".
+ *
+ * IPv6 conta pelo prefixo /64: uma única conexão costuma receber um bloco /64 inteiro,
+ * e trocar de endereço dentro dele não pode render um visitante novo.
  */
-export function clientIp(headers: Headers) {
-  return headers.get("x-forwarded-for")?.split(",")[0]?.trim() || headers.get("x-real-ip") || "desconhecido";
+export function clientIp(headers: Headers): string | null {
+  const ip = headers.get("x-forwarded-for")?.split(",")[0]?.trim() || headers.get("x-real-ip")?.trim();
+  if (!ip) return process.env.NODE_ENV === "production" ? null : "local";
+  return isIPv6(ip) ? ipv6Network(ip) : ip;
+}
+
+function ipv6Network(ip: string) {
+  // IPv4 escrito como IPv6 (::ffff:1.2.3.4) é um IPv4 comum.
+  const mapped = /^::ffff:(\d+\.\d+\.\d+\.\d+)$/i.exec(ip);
+  if (mapped) return mapped[1];
+
+  const [head, tail] = ip.split("::");
+  const left = head ? head.split(":") : [];
+  const right = tail ? tail.split(":") : [];
+  const groups = [...left, ...Array(8 - left.length - right.length).fill("0"), ...right];
+  return `${groups.slice(0, 4).map((group) => parseInt(group, 16).toString(16)).join(":")}::/64`;
 }

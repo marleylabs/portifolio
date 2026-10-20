@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
+import { useAmbientMotionPaused } from "@/hooks/use-preferences";
 import { randomBetween, useRandomInterval } from "@/hooks/use-random-interval";
 import styles from "./Sparkles.module.css";
 
@@ -52,7 +52,9 @@ const STATIC_SPARKLES: Sparkle[] = [
  * - As posições são sorteadas só no cliente, depois de montar: sortear no servidor
  *   geraria HTML diferente do cliente (erro de hidratação).
  * - Só gera estrelas enquanto o trecho está visível (IntersectionObserver).
- * - Com prefers-reduced-motion, mostra três estrelas paradas.
+ * - Com prefers-reduced-motion ou "Pausar animações", mostra três estrelas paradas.
+ *   Elas estão sempre no HTML e é o CSS que decide exibi-las: decidir no JS fazia as
+ *   estrelas fixas aparecerem e sumirem na hidratação para todo mundo.
  * - As estrelas são decorativas (aria-hidden): leitores de tela leem só o texto.
  */
 export function Sparkles({
@@ -62,7 +64,7 @@ export function Sparkles({
   maxDelay = 450,
   lifetime = 750,
 }: SparklesProps) {
-  const prefersReducedMotion = usePrefersReducedMotion();
+  const paused = useAmbientMotionPaused();
   const wrapperRef = useRef<HTMLSpanElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [sparkles, setSparkles] = useState<Sparkle[]>([]);
@@ -75,7 +77,7 @@ export function Sparkles({
     return () => observer.disconnect();
   }, []);
 
-  const isAnimating = isVisible && !prefersReducedMotion;
+  const isAnimating = isVisible && !paused;
 
   useRandomInterval(
     () => {
@@ -89,24 +91,28 @@ export function Sparkles({
     isAnimating ? maxDelay : null,
   );
 
-  const visibleSparkles = prefersReducedMotion ? STATIC_SPARKLES : sparkles;
-
   return (
     <span
       ref={wrapperRef}
       className={styles.wrapper}
       style={{ "--sparkle-color": color, "--sparkle-lifetime": `${lifetime}ms` } as CSSProperties}
-      data-static={prefersReducedMotion}
     >
-      {visibleSparkles.map(({ id, size, style }) => (
-        <span key={id} className={styles.sparkle} style={style} aria-hidden="true">
-          <svg width={size} height={size} viewBox="0 0 136 136" fill="none">
-            {/* Estrela de quatro pontas com lados côncavos (desenho próprio). */}
-            <path d="M68 0Q74 62 136 68Q74 74 68 136Q62 74 0 68Q62 62 68 0Z" fill="currentColor" />
-          </svg>
-        </span>
+      {STATIC_SPARKLES.map((sparkle) => (
+        <Star key={sparkle.id} {...sparkle} className={`${styles.sparkle} ${styles.static}`} />
       ))}
+      {!paused && sparkles.map((sparkle) => <Star key={sparkle.id} {...sparkle} className={styles.sparkle} />)}
       <span className={styles.content}>{children}</span>
+    </span>
+  );
+}
+
+function Star({ size, style, className }: Sparkle & { className: string }) {
+  return (
+    <span className={className} style={style} aria-hidden="true">
+      <svg width={size} height={size} viewBox="0 0 136 136" fill="none">
+        {/* Estrela de quatro pontas com lados côncavos (desenho próprio). */}
+        <path d="M68 0Q74 62 136 68Q74 74 68 136Q62 74 0 68Q62 62 68 0Z" fill="currentColor" />
+      </svg>
     </span>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { HONEYPOT_FIELD } from "@/lib/forms";
+import { HONEYPOT_FIELD } from "@/lib/form-fields";
 import styles from "./Forms.module.css";
 
 /**

@@ -1,0 +1,73 @@
+.pause,
+.play {
+  transform-box: view-box;
+  transform-origin: 12px 12px;
+  transition:
+    transform var(--spring-duration) var(--ease-spring),
+    opacity var(--duration-fast) var(--ease-out);
+}
+
+.play {
+  transform: scale(0) rotate(-90deg);
+  opacity: 0;
+}
+
+:global(:root[data-motion="paused"]) .pause {
+  transform: scale(0) rotate(90deg);
+  opacity: 0;
+}
+
+:global(:root[data-motion="paused"]) .play {
+  transform: scale(1) rotate(0deg);
+  opacity: 1;
+}
+
+.wrapper {
+  position: relative;
+  display: inline-grid;
+}
+
+/* Dica "reduzidas pelo sistema": só existe de verdade com o media query abaixo. */
+.hint {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* O sistema vence: o ícone mostra "pausado" mesmo sem preferência salva. */
+  .pause {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  .play {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  .wrapper :global(button) {
+    cursor: not-allowed;
+  }
+
+  .hint {
+    position: absolute;
+    top: calc(100% + var(--space-2));
+    right: 0;
+    z-index: 1;
+    display: block;
+    width: max-content;
+    max-width: min(18rem, 80vw);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+    background: var(--color-text);
+    color: var(--color-bg);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    line-height: 1.35;
+    visibility: hidden;
+  }
+
+  .wrapper:hover .hint,
+  .wrapper:focus-within .hint {
+    visibility: visible;
+  }
+}

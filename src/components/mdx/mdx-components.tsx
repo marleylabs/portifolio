@@ -7,6 +7,7 @@ import { CodeBlock, CodeBlockPre } from "./CodeBlock";
 import { Diagram } from "./Diagram";
 import { Heading } from "./Heading";
 import { MdxImage } from "./MdxImage";
+import { MdxTable } from "./MdxTable";
 import { Sidenote } from "./Sidenote";
 import { SmartLink } from "./SmartLink";
 import { Spacer } from "./Spacer";
@@ -18,6 +19,7 @@ export const mdxComponents: MDXComponents = {
   a: SmartLink,
   pre: CodeBlockPre,
   img: MdxImage,
+  table: MdxTable,
   Asterisk,
   BuiltWithAI,
   CodeBlock,

@@ -23,6 +23,11 @@
   animation-delay: -1.6s;
 }
 
+/* "Pausar animações" (botão no header): congela onde está. */
+:global(:root[data-motion="paused"]) .digit {
+  animation-play-state: paused;
+}
+
 @keyframes bob {
   from {
     transform: translateY(-6%) rotate(-6deg);
@@ -40,6 +45,11 @@
   animation: wobble 4s ease-in-out infinite;
 }
 
+/* "Pausar animações" (botão no header): congela onde está. */
+:global(:root[data-motion="paused"]) .face {
+  animation-play-state: paused;
+}
+
 @keyframes wobble {
   0%,
   100% {
@@ -51,17 +61,21 @@
   }
 }
 
-/* As pupilas seguem o cursor com uma leve inércia. */
-.pupils {
-  transition: transform 180ms var(--ease-out);
-}
-
 .eyes {
   transform-box: fill-box;
   transform-origin: center;
-  transition: transform 70ms ease-in;
+  transition: transform var(--duration-press) ease-in;
 }
 
 .art[data-blinking="true"] .eyes {
   transform: scaleY(0.12);
+}
+
+/* O reflexo some junto quando o olho fecha. */
+.glint {
+  transition: opacity var(--duration-press) ease-in;
+}
+
+.art[data-blinking="true"] .glint {
+  opacity: 0;
 }
