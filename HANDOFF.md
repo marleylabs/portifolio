@@ -11,7 +11,6 @@ Atualizado em 19/10/2026.
 ```bash
 git clone https://github.com/marleylabs/portifolio.git
 cd portifolio
-git checkout melhorias/auditoria
 git config user.name "Marley"
 git config user.email "andersonmarleylima@icloud.com"   # identidade escolhida pelo usuário
 npm install
@@ -44,7 +43,8 @@ conteúdo e textos da interface em português (pt-BR).
   arquivos antes de o plano ser aprovado; um lote por vez, mostrar o resultado e esperar aprovação.
 - Rodar `ponytail-review` nas mudanças ao fim de cada lote de implementação, antes de apresentar.
 - Nunca alterar informações pessoais, projetos ou experiências sem perguntar.
-- Um commit por lote na branch `melhorias/auditoria`. Push só quando o usuário pedir.
+- Trabalho novo numa branch própria (ex.: `projeto/…`), com um commit por lote e PR para a `main`.
+  A `main` é a branch padrão e publica na Vercel a cada push. Push só quando o usuário pedir.
 - Manter `docs/verificacao-pos-deploy.md` atualizado com tudo que só dá para checar em produção.
 
 ## Estado do plano de melhorias
@@ -68,4 +68,4 @@ Decisões registradas:
 - `este-portfolio.mdx` não deve citar "Motion" na stack (confirmado; já não cita).
 - Copy: T2 só em texto corrido, não em código; T9 é o número medido após o Lote 3.
 
-Plano de melhorias concluído (Lotes 0–8). Próximos passos possíveis: deploy na Vercel e roteiro de `docs/verificacao-pos-deploy.md`. Para mexer em dependências, use npm ≥ 11.21 (ver `docs/pendencias.md`).
+Plano de melhorias concluído (Lotes 0–8) e mesclado na `main` (PR #1). Estudo de caso da gestão de medições publicado no PR #2, anonimizado. Próximos passos possíveis: deploy na Vercel e roteiro de `docs/verificacao-pos-deploy.md`. Para mexer em dependências, use npm ≥ 11.21 (ver `docs/pendencias.md`).
