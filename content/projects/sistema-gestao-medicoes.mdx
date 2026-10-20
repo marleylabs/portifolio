@@ -1,0 +1,102 @@
+---
+title: Gestão de medições de fornecedores
+slug: sistema-gestao-medicoes
+category: produto
+summary: Um sistema interno que tirou da planilha e do e-mail a medição mensal de fornecedores, da carga dos dados ao pagamento. Cada fornecedor confere o boletim, envia a nota fiscal e acompanha o pagamento num portal próprio.
+publishedOn: 2026-10-19
+tags: [sistema interno, dados]
+cover:
+  src: /projects/sistema-gestao-medicoes/cover.png
+  alt: Painel do sistema de gestão de medições, com indicadores de total medido, horas, projetos ativos e registros, um gráfico de evolução por ciclo e um ranking de projetos por valor. Os números e os nomes estão borrados.
+area: [frontend, backend, dados, devops]
+stack: [Next.js, TypeScript, PostgreSQL, Prisma, Python, pandas, Docker, HeroUI, Tailwind CSS]
+role: Fullstack, do banco ao deploy
+---
+
+## Problema
+
+Todo mês, uma empresa de engenharia precisa medir o trabalho de dezenas de fornecedores: quem
+trabalhou em qual projeto, quantas horas e por qual valor. Tudo isso vivia numa **planilha
+central**, e o resto do processo andava por e-mail.
+
+Cada fornecedor recebia o seu boletim de medição, conferia com os próprios números, discutia as
+divergências, mandava a nota fiscal e esperava o pagamento. Era trabalho manual em todas as
+etapas, sem um lugar que mostrasse em que pé estava cada fornecedor no ciclo.
+
+## Solução
+
+Um sistema web que leva o ciclo inteiro para um fluxo só:
+
+1. A equipe de medição **sobe a planilha do ciclo**, e os dados entram no banco.
+2. O boletim de cada fornecedor é **enviado pelo sistema**.
+3. O fornecedor **confere no próprio portal**, enviando a planilha dele. As divergências aparecem
+   linha a linha, e a equipe decide incluir ou descartar cada uma.
+4. Com o boletim aprovado, o fornecedor **envia a nota fiscal**, o financeiro valida e registra o
+   pagamento com o comprovante.
+
+São cinco perfis de acesso (administração, medição, administrativo, financeiro e fornecedor),
+cada um vendo só a sua parte. O fornecedor tem um portal próprio, com as suas medições, a nota
+fiscal e um chat com a equipe.
+
+## Arquitetura
+
+A aplicação é um Next.js com Prisma sobre PostgreSQL. A leitura das planilhas fica num serviço
+Python separado, porque pandas lida melhor com Excel do que qualquer coisa em Node. Tudo roda
+em contêineres Docker num único servidor.
+
+<Diagram
+  title="Da planilha do ciclo ao pagamento"
+  columns={[
+    [{ id: "planilha", label: "Planilha do ciclo", note: "Excel" }],
+    [{ id: "etl", label: "Serviço de ETL", note: "Python, pandas" }],
+    [{ id: "db", label: "PostgreSQL", note: "migrations Prisma" }],
+    [
+      { id: "equipe", label: "Painéis da equipe", note: "medição, administrativo, financeiro" },
+      { id: "portal", label: "Portal do fornecedor", note: "conferência, NF, chat" },
+    ],
+  ]}
+  edges={[
+    ["planilha", "etl", "upload"],
+    ["etl", "db", "uma transação"],
+    ["db", "equipe", "Next.js"],
+    ["db", "portal", "Next.js"],
+  ]}
+  caption="O estado do fluxo fica por fornecedor e por ciclo, não em cada linha de medição."
+/>
+
+Algumas escolhas deliberadas para manter o sistema simples de operar:
+
+- **Sessão própria com JWT**, guardada em cookie e revalidada no banco a cada requisição: um
+  acesso desativado perde o efeito na hora.
+- **Polling em vez de WebSocket** para o chat e as atualizações: menos peças para manter num
+  servidor interno.
+- **Arquivos no banco**: notas fiscais e anexos ficam no PostgreSQL, então um único backup cobre
+  tudo.
+- **Deploy por imagem**, com a imagem anterior e um dump guardados para voltar em minutos.
+
+## Desafios
+
+- **Quem é quem.** As planilhas escrevem o mesmo fornecedor de várias formas, e o CNPJ não serve
+  de chave, porque cadastros diferentes compartilham o mesmo. A identidade passou a ser um código
+  mais apelidos registrados explicitamente. Um nome desconhecido vira uma pendência para um
+  administrador resolver, nunca um palpite: um vínculo errado mostraria a um fornecedor os dados
+  de outro.
+- **Reimportar sem apagar o que já foi aprovado.** Corrigir a planilha de um ciclo em andamento
+  apagava aprovações e notas fiscais. Hoje, um boletim aprovado ou pago é imutável para a
+  importação: se a planilha divergir dele, o sistema reporta a diferença, mas não sobrescreve.
+- **Excluir sem perder o histórico.** Remover um fornecedor precisava respeitar a LGPD sem apagar
+  medições e pagamentos antigos. O cadastro sai, o histórico fica, com o nome anonimizado e a
+  exclusão registrada em auditoria.
+- **Trocar identificadores com o sistema em uso.** Unificar o código de login com o código do
+  cadastro exigiu migrar os dados em produção. O ensaio rodou antes numa cópia local de um backup
+  real, com medição antes e depois, e a migração em produção fechou com 55 de 55 fornecedores
+  migrados.
+
+## Resultado
+
+O ciclo de medição saiu da planilha e do e-mail e está em produção. Cada etapa tem dono, estado e
+histórico, e o fornecedor acompanha tudo sozinho pelo portal.
+
+Do lado da engenharia, o sistema é sustentado por mais de 540 testes automatizados, 216 cenários
+de ponta a ponta no navegador e 13 decisões de arquitetura registradas, cada uma com o contexto e
+as alternativas descartadas.
