@@ -1,0 +1,112 @@
+---
+title: Projeto IMÃ
+slug: projeto-ima
+category: produto
+summary: Um sistema interno de gestão administrativa e contas a pagar. Vale-transporte, alimentação, café da manhã, cesta básica e treinamentos saíram de planilhas avulsas para um fluxo com rateio por centro de custo, leitura de documentos por OCR e aprovação.
+publishedOn: 2026-10-20
+tags: [sistema interno, dados]
+cover:
+  src: /projects/projeto-ima/cover.png
+  alt: Visão geral do Projeto IMÃ, com a navegação lateral por despesas, contabilidade e cadastros, atalhos para cada módulo e a lista das obrigações recentes. A marca, os nomes e os valores estão borrados.
+area: [frontend, backend, dados, devops]
+stack: [Next.js, TypeScript, PostgreSQL, Prisma, Tesseract.js, ExcelJS, Docker, daisyUI, Tailwind CSS]
+role: Fullstack, do banco ao deploy
+---
+
+## Problema
+
+O setor administrativo de uma empresa fechava todo mês as despesas com pessoal de forma manual:
+vale-transporte, alimentação, café da manhã, cesta básica e treinamentos. Cada uma tinha a sua
+**planilha**, o seu fornecedor e as suas regras, e o resultado ainda precisava ser **rateado**
+por empresa, centro de custo e departamento antes de ir para o financeiro e a contabilidade.
+
+As notas e os boletos chegavam como PDF ou imagem e eram conferidos à mão. Não havia um lugar
+que mostrasse em que etapa estava cada despesa, nem um histórico de quem aprovou o quê.
+
+## Solução
+
+Um sistema web que reúne essas rotinas num fluxo só:
+
+1. **Cadastro mestre** de colaboradores, empresas, centros de custo, departamentos e
+   fornecedores, a base de todos os rateios.
+2. **Um módulo por despesa**, cada um com as suas regras: vale-transporte por dias úteis e
+   feriados, alimentação por refeição registrada, cesta básica com proporcional de admissão e
+   espelho de ponto, treinamentos por participante.
+3. **Rateio automático** por empresa, centro de custo, departamento e colaborador, exportado em
+   planilhas no formato que o financeiro já usava.
+4. **Documentos lidos por OCR**: o sistema extrai CNPJ, datas, valores e chave de NF-e, e a
+   equipe confere os campos lado a lado com o arquivo.
+5. **Aprovação configurável**, em etapas, antes do pagamento.
+
+São seis perfis de acesso, e cada um vê só o que a sua permissão libera. O módulo original, a
+importação e conferência da folha de pagamento, continua lá, agora dentro da Contabilidade.
+
+## Arquitetura
+
+A aplicação é um Next.js com Prisma sobre PostgreSQL. As regras de negócio ficam em módulos por
+área, e as rotas de API só validam a permissão e delegam. A leitura dos documentos roda num
+**worker separado**, para que um PDF escaneado de muitas páginas nunca trave uma requisição.
+
+<Diagram
+  title="Do documento ao pagamento"
+  columns={[
+    [
+      { id: "planilhas", label: "Planilhas e espelho de ponto", note: "XLSX, CSV" },
+      { id: "docs", label: "Notas e boletos", note: "PDF, imagem, XML" },
+    ],
+    [
+      { id: "app", label: "Aplicação web", note: "Next.js, módulos por despesa" },
+      { id: "worker", label: "Worker de documentos", note: "Tesseract.js" },
+    ],
+    [{ id: "db", label: "PostgreSQL", note: "migrations Prisma" }],
+    [
+      { id: "rateio", label: "Rateios", note: "XLSX por centro de custo" },
+      { id: "aprovacao", label: "Aprovação", note: "etapas configuráveis" },
+    ],
+  ]}
+  edges={[
+    ["planilhas", "app", "upload"],
+    ["docs", "worker", "fila"],
+    ["app", "db", "regras do módulo"],
+    ["worker", "db", "campos extraídos"],
+    ["db", "rateio", "exportação"],
+    ["db", "aprovacao", "fluxo"],
+  ]}
+  caption="Web e worker compartilham o banco; a fila de documentos também vive nele."
+/>
+
+Algumas escolhas deliberadas para manter o sistema simples de operar:
+
+- **OCR local**, sem API externa: os documentos não saem do servidor e não há custo por página.
+  O PDF com texto é lido direto; o OCR só entra quando a página é uma imagem.
+- **Fila no próprio banco**: o worker reserva cada job numa transação, então dois workers nunca
+  processam o mesmo documento, e não há outro serviço para manter.
+- **Nada é apagado de verdade**: uma obrigação excluída sai das telas, mas continua no banco para
+  a auditoria.
+- **Arquivos fora da pasta pública**, num volume privado do Docker, servidos só depois da checagem
+  de permissão.
+
+## Desafios
+
+- **Recuperar o código que estava em produção.** O repositório principal tinha uma versão bem mais
+  antiga do que a que rodava no servidor. Antes de qualquer melhoria, o código completo foi
+  recuperado, auditado e reconciliado, e as conclusões das auditorias antigas foram revisadas uma a
+  uma.
+- **Não fingir certeza.** Quando a confiança do OCR fica abaixo de um limite, o documento vai para
+  revisão em vez de ser aprovado sozinho. Um arquivo de tipo desconhecido também vai para revisão,
+  sem derrubar a fila.
+- **Regras que mudam no meio do mês.** A cesta básica precisou de proporcional para admissões,
+  meses retroativos e mês comercial de 30 dias. Cada regra entrou como migration própria, e o
+  rateio guarda um retrato histórico, para que mudar um cadastro hoje não altere um mês já fechado.
+- **Atualizar produção sem perder dados.** Cada deploy começa com um backup verificado do banco,
+  aplica as migrations pendentes e compara as contagens de registros antes e depois.
+
+## Resultado
+
+As despesas com pessoal saíram das planilhas avulsas e estão em produção, cada uma com regra,
+estado e histórico. O rateio que antes era montado à mão sai pronto, no formato que o financeiro
+já conhecia.
+
+Do lado da engenharia, são 61 tabelas, 50 migrations versionadas, 86 rotas de API protegidas por
+permissão e uma suíte de 120 testes automatizados rodando junto com lint, checagem de tipos e
+build.
